@@ -7,8 +7,12 @@ import asteroids.components.Collider.*;
 import asteroids.components.Collider.Shapes.*;
 import asteroids.components.Geometry2D.*;
 import asteroids.components.Geometry3D.Transform3DComponent;
+import asteroids.math.Quadtree;
+import asteroids.math.Vector2f;
 import asteroids.subsystems.*;
+import asteroids.subsystems.physics2D.Physics2DAABB;
 import static org.lwjgl.opengl.GL11.glClearColor;
+import sun.awt.windows.awtLocalization_fr;
 
 public class Testgame extends Game
 {
@@ -148,6 +152,24 @@ public class Testgame extends Game
 	@Override
 	public void cleanUp()
 	{
+		//test
+		Quadtree wtf = new Quadtree(3, 3, new Vector2f(-5, -5), new Vector2f(5, 5));
+		wtf.insert(new Physics2DAABB(new Vector2f(1, 1), new Vector2f(1.1f, 2)));
+		wtf.insert(new Physics2DAABB(new Vector2f(3, 1), new Vector2f(3.1f, 2)));
+		wtf.insert(new Physics2DAABB(new Vector2f(4, -2), new Vector2f(5, -1)));
+		wtf.insert(new Physics2DAABB(new Vector2f(4, -2), new Vector2f(5, 1)));
+		wtf.insert(new Physics2DAABB(new Vector2f(3, 3), new Vector2f(4, 4)));
+		wtf.insert(new Physics2DAABB(new Vector2f(4, -2), new Vector2f(5, 1)));
+		System.out.println("OCCUPIED: " + wtf.getOccupiedCount());
+		for(Physics2DAABB box : wtf.getOccupiedList())
+		{
+			System.out.println("root " + box.hashCode());
+			for(Physics2DAABB hierarchy : wtf.getHierarchyList(box))
+			{
+				System.out.println("- hash " + hierarchy.hashCode());
+			}
+		}
+
 		this.world.cleanUp();
 	}
 	
