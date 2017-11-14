@@ -20,7 +20,7 @@ public class AsteroidSubsystem extends Subsystem
 	private float timer = 0;
 	
 	@Override
-	public void iterate(World world, float delta)
+	public void process(World world, float delta)
 	{
 		for(int entityId : this.getList("primary"))
 		{

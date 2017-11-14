@@ -50,8 +50,10 @@ public class Testgame extends Game
 		world.addSubsystem(ThrustSubsystem.class, thrustComponentKey | transform2DComponentKey);
 		world.addSubsystem(ShootSubsystem.class, shootComponentKey | transform2DComponentKey);
 			world.getSubsystem(ShootSubsystem.class).addLock("rigidbodies", shootComponentKey | transform2DComponentKey | rigidbody2DComponentKey);
-		world.addSubsystem(SimplePhysics2DSubsystem.class, transform2DComponentKey | rigidbody2DComponentKey);
-			world.getSubsystem(SimplePhysics2DSubsystem.class).addLock("colliders", collider2DComponentKey | transform2DComponentKey);
+//		world.addSubsystem(SimplePhysics2DSubsystem.class, transform2DComponentKey | rigidbody2DComponentKey);
+//			world.getSubsystem(SimplePhysics2DSubsystem.class).addLock("colliders", collider2DComponentKey | transform2DComponentKey);
+		world.addSubsystem(Physics2DMoveSubsystem.class, transform2DComponentKey | rigidbody2DComponentKey);
+		world.addSubsystem(Physics2DMoveSubsystem.class, transform2DComponentKey | collider2DComponentKey);
 		world.addSubsystem(FieldSubsystem.class, transform2DComponentKey);
 		world.addSubsystem(Projectile2DSubsystem.class, transform2DComponentKey | projectile2DComponentKey);
 		world.addSubsystem(AsteroidSubsystem.class, asteroidComponentKey | transform2DComponentKey | collider2DComponentKey | rotateComponentKey);

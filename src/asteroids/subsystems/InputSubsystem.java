@@ -181,7 +181,28 @@ public class InputSubsystem extends Subsystem
 	}
 	
 	@Override
-	public void preIterate(World world, float delta)
+	public void process(World world, float delta)
+	{
+		catchKeys(world, delta);
+		
+		for(int entityId : this.getList("primary"))
+		{
+			InputComponent inputComponent = world.getComponent(entityId, InputComponent.class);
+			for(int key : this.lastKeys)
+			{
+				String keyName = this.keyNames.get(key);
+				String command = inputComponent.commands.get(keyName);
+				if(command != null)
+				{
+					//System.out.println(entityId + ": " + command);
+					this.sendMessage(new Message(entityId, command, ""));
+				}
+			}
+			//System.out.print("; ");
+		}
+	}
+	
+	public void catchKeys(World world, float delta)
 	{
 		//catches the key presses
 		this.lastKeys.clear();
@@ -203,29 +224,7 @@ public class InputSubsystem extends Subsystem
 				this.lastMouse.add(i);
 			}
 		}
-
 		//System.out.print("InputSubsystem   processing entity: ");
-	}
-	
-	@Override
-	public void iterate(World world, float delta)
-	{
-		for(int entityId : this.getList("primary"))
-		{
-			InputComponent inputComponent = world.getComponent(entityId, InputComponent.class);
-			for(int key : this.lastKeys)
-			{
-				String keyName = this.keyNames.get(key);
-				String command = inputComponent.commands.get(keyName);
-				if(command != null)
-				{
-					//System.out.println(entityId + ": " + command);
-					this.sendMessage(new Message(entityId, command, ""));
-				}
-			}
-			//System.out.print("; ");
-		}
-		
 	}
 	
 	public static boolean getKey(int keyCode)

@@ -12,7 +12,7 @@ public class World
 	
 	private EntityManager entityManager;
 	private SubsystemManager subsystemManager;
-	private ComponentManager componentManager;
+	private aComponentManager componentManager;
 	
 	private ArrayList<Pair<Integer, Long>> entitiesToCreate = new ArrayList<>();
 	private ArrayList<Integer> entitiesToDestroy = new ArrayList<>();
@@ -25,6 +25,11 @@ public class World
 		this.componentManager = new ComponentManager(this.MAX_COMPONENTS, this.MAX_ENTITIES);
 	}
 	
+	/**
+	 * Main world cycle
+	 * 
+	 * @param delta delta time
+	 */
 	public void update(float delta)
 	{
 		this.createEntities();
@@ -32,6 +37,9 @@ public class World
 		this.destroyEntities();
 	}
 	
+	/**
+	 * Clean-up at exit
+	 */
 	public void cleanUp()
 	{
 		//this.entityManager.cleanUp();
@@ -114,6 +122,11 @@ public class World
 	}
 	
 //ENTITIES
+	/**
+	 * Creates new entity in the ECS
+	 * 
+	 * @return entity ID handle
+	 */
 	public int createEntity()
 	{
 		int result = this.entityManager.createEntity();
@@ -121,17 +134,35 @@ public class World
 		return result;
 	}
 	
+	/**
+	 * Destroys given entity
+	 * 
+	 * @param entityId entity to destroy (ID)
+	 */
 	public void destroyEntity(int entityId)
 	{
 		this.entitiesToDestroy.add(entityId);
 	}
 	
+	/**
+	 * Retrieves entity bitwise key. Entity key defines which types of components is the entity composed of
+	 * 
+	 * @param entityId entity ID
+	 * @return 
+	 */
 	public long getEntityKey(int entityId)
 	{
 		return this.entityManager.getEntityKey(entityId);
 	}
 	
-		public boolean hasEntityComponent(int entityId, Class componentClass)
+	/**
+	 * Asks if entity has a component of a given type
+	 * 
+	 * @param entityId       entity ID
+	 * @param componentClass component class
+	 * @return true if component is part of a given entity
+	 */
+	public boolean hasEntityComponent(int entityId, Class componentClass)
 	{
 		boolean result = false;
 		long componentKey = this.componentManager.getComponentKey(componentClass);
@@ -144,6 +175,9 @@ public class World
 	}
 	
 //AUTOMATION
+	/**
+	 * Postponed entity creation: entities created during subsystems iterations are dormant and activated only before subsystems cycle
+	 */
 	private void createEntities()
 	{
 		for(Pair<Integer, Long> pair : this.entitiesToCreate)
@@ -153,6 +187,9 @@ public class World
 		this.entitiesToCreate.clear();
 	}
 	
+	/**
+	 * Postponed entity destruction: entities destroyed during subsystems iterations are active and erased only after subsystems cycle
+	 */
 	private void destroyEntities()
 	{
 		for(int entityId : this.entitiesToDestroy)

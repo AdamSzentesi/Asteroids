@@ -16,7 +16,7 @@ import java.util.List;
 public class ShootSubsystem extends Subsystem
 {
 	@Override
-	public void iterate(World world, float delta)
+	public void process(World world, float delta)
 	{
 		for(int entityId : this.getList("primary"))
 		{

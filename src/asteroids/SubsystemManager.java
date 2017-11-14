@@ -21,7 +21,7 @@ public class SubsystemManager
 		{
 			if(subsystem.active)
 			{
-				subsystem.process(world, delta);
+				subsystem.upate(world, delta);
 			}
 		}
 		

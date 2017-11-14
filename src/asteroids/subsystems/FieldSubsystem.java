@@ -8,7 +8,7 @@ import asteroids.math.Vector2f;
 public class FieldSubsystem extends Subsystem
 {
 	@Override
-	public void iterate(World world, float delta)
+	public void process(World world, float delta)
 	{
 		for(int entityId : this.getList("primary"))
 		{

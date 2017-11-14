@@ -4,7 +4,7 @@ import asteroids.components.Component;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ComponentManager extends aComponentManager
+public class ComponentManager1 extends aComponentManager
 {
 	private int MAX_COMPONENTS;
 	private String[] componentTypes;//remove!!!
@@ -15,7 +15,7 @@ public class ComponentManager extends aComponentManager
 	private long[] componentTypeKeys;
 	private int[][] entityComponentRelations;
 	
-	public ComponentManager(int MAX_COMPONENTS, int MAX_ENTITIES)
+	public ComponentManager1(int MAX_COMPONENTS, int MAX_ENTITIES)
 	{
 		this.MAX_COMPONENTS = MAX_COMPONENTS;
 		this.componentTypes = new String[MAX_COMPONENTS];//remove!!!
@@ -82,19 +82,6 @@ public class ComponentManager extends aComponentManager
 		}
 	}
 	
-	private boolean isInArray(String value, String[] array)
-	{
-		boolean result = false;
-		for(int i = 0; i < array.length; i++)
-		{
-			if(value.equals(array[i]))
-			{
-				result = true;
-			}
-		}
-		return result;
-	}
-	
 	@Override
 	public int getComponentId(Class componentClass)
 	{
@@ -106,12 +93,6 @@ public class ComponentManager extends aComponentManager
 				result = i;
 			}
 		}
-		return result;
-	}
-	
-	private long getComponentKey(int id)
-	{
-		long result = this.componentTypeKeys[id];
 		return result;
 	}
 	
@@ -127,6 +108,25 @@ public class ComponentManager extends aComponentManager
 	public String getComponentType(int id)
 	{
 		String result = this.componentTypes[id];
+		return result;
+	}
+
+	private long getComponentKey(int id)
+	{
+		long result = this.componentTypeKeys[id];
+		return result;
+	}
+	
+	private boolean isInArray(String value, String[] array)
+	{
+		boolean result = false;
+		for(int i = 0; i < array.length; i++)
+		{
+			if(value.equals(array[i]))
+			{
+				result = true;
+			}
+		}
 		return result;
 	}
 	

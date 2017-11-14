@@ -98,7 +98,7 @@ public class CoreEngine
 				game.update((float)minFrameTime);
 				Window.render();
 				long eTime = System.nanoTime();
-//				System.out.println("--- update time: " + (float)(eTime - sTime)/1000000 + "ms");
+				System.out.println("--- update time: " + (float)(eTime - sTime)/1000000 + "ms");
 				
 				if(frameCounter >= 1.0)
 				{

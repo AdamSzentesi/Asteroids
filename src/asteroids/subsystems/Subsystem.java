@@ -9,7 +9,7 @@ import asteroids.World;
 import java.util.HashMap;
 import java.util.List;
 
-public class Subsystem
+abstract public class Subsystem
 {
 	public SubsystemMessenger subsystemMessenger;
 	public ArrayList<Message> messages = new ArrayList<>();
@@ -21,14 +21,14 @@ public class Subsystem
 	
 	public Subsystem(){}
 	
-	public void setPrimaryLock(long lock)
+	public final void setPrimaryLock(long lock)
 	{
 		System.out.println(", setting 'primary' lock:" + lock);
 		this.iterableEntities.put(lock, new ArrayList<>());
 		this.locksList.put("primary", lock);
 	}
 	
-	public void addLock(String listName, long lock)
+	public final void addLock(String listName, long lock)
 	{
 		String subsystemName = this.getClass().getSimpleName();
 		System.out.println("SubsystemManager: " + subsystemName + " adding '" + listName + "' lock:" + lock);
@@ -36,31 +36,34 @@ public class Subsystem
 		this.locksList.put(listName, lock);
 	}
 	
-	public ArrayList<Integer> getList(String listName)
+	public final ArrayList<Integer> getList(String listName)
 	{
 		return this.iterableEntities.get(this.locksList.get(listName));
 	}
 	
-	public void setMessenger(SubsystemMessenger subsystemMessenger)
+	public final void setMessenger(SubsystemMessenger subsystemMessenger)
 	{
 		this.subsystemMessenger = subsystemMessenger;
 	}
 	
-	public void process(World world, float delta)
+	public final void upate(World world, float delta)
 	{
 		long startTime = System.nanoTime();
-		preIterate(world, delta);
-		iterate(world, delta);
-		postIterate(world, delta);
+
+		process(world, delta);
 		this.messages.clear();
+
 		long endTime = System.nanoTime();
 		float millis = (float)(endTime - startTime)/1000000;
-		if(millis > 1)
-			System.out.println(this.getClass().getSimpleName() + " time: " + millis);
+		//if(millis > 1)
+			//System.out.println(this.getClass().getSimpleName() + " time: " + millis);
 	}
 	
-	//NEW
-	public void updateEntityList(int entityId, long entityKey)
+	//Iteration sequence
+	abstract public void process(World world, float delta);
+	
+	
+	public final void updateEntityList(int entityId, long entityKey)
 	{
 		//update iterable entitites
 		for(Map.Entry<Long, ArrayList<Integer>> entry : this.iterableEntities.entrySet())
@@ -87,26 +90,21 @@ public class Subsystem
 
 	}
 	
-	//Iteration sequence
-	public void preIterate(World world, float delta){}
-	public void iterate(World world, float delta){}
-	public void postIterate(World world, float delta){}
-	
 	//messaging
-	public void sendMessage(Message message)
+	public final void sendMessage(Message message)
 	{
 		//System.out.println("Sending MSG: " + message.entityId + " - " + message.parameter);
 		this.subsystemMessenger.sendMessage(this, message);
 		this.subsystemMessenger.addMessage(message.entityId, message);
 	}
 	
-	public void receiveMessage(Message message)
+	public final void receiveMessage(Message message)
 	{
 		//System.out.println("Received: " + message.entityId + " - " + message.parameter);
 		this.messages.add(message);
 	}
 	
-	public List<Message> getMessages(int entityId)
+	public final List<Message> getMessages(int entityId)
 	{
 		//System.out.println("getting messages for " + entityId);
 		return this.subsystemMessenger.getMessages(entityId);

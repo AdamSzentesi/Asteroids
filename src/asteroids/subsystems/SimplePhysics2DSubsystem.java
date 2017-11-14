@@ -29,7 +29,7 @@ public class SimplePhysics2DSubsystem extends Subsystem
 	private final int shapeKeyPoint = 1 << 5;
 
 	@Override
-	public void iterate(World world, float delta)
+	public void process(World world, float delta)
 	{
 		Vector2f netAcceleration = new Vector2f();
 		boolean enableCollision = true;

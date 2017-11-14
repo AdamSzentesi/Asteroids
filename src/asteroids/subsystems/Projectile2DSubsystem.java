@@ -10,7 +10,7 @@ public class Projectile2DSubsystem extends Subsystem
 	private int ignored;
 	
 	@Override
-	public void iterate(World world, float delta)
+	public void process(World world, float delta)
 	{	
 		for(int entityId : this.getList("primary"))
 		{
