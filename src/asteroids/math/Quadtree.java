@@ -2,7 +2,6 @@ package asteroids.math;
 
 import java.util.ArrayList;
 import java.util.List;
-import jdk.nashorn.internal.codegen.CompilerConstants;
 
 public class Quadtree
 {
@@ -49,58 +48,6 @@ public class Quadtree
 		else if(this.SW.bounds.inInside(point)) this.SW.insert(point, value);
 		else System.out.println("ERROR: Unhandled partition " + point.x + "," + point.y);
 	}
-	
-	public static void search(Quadtree quadtree)
-	{
-		if (quadtree == null) return;
-		
-		System.out.println("Level = " + quadtree.level + " :" + quadtree.bounds.min.x + "," + quadtree.bounds.min.y + " > " + quadtree.bounds.max.x + "," + quadtree.bounds.max.y);
-		if(quadtree.nodes.isEmpty())
-		{
-			System.out.println(".leaf");
-		}
-		else
-		{
-			for (QuadtreeNode node : quadtree.nodes)
-			{
-				System.out.println(". " + node.value);
-			}
-		}
-		
-		search(quadtree.NE);
-		search(quadtree.NW);
-		search(quadtree.SE);
-		search(quadtree.SW);
-	}
-	
-//	public static List getList(NewQuadtree quadtree)
-//	{
-//		List result = new ArrayList<Integer>();
-//		List result2 = new ArrayList<ArrayList<Integer>>();
-//		
-//		if(!quadtree.nodes.isEmpty())
-//		{
-//			System.out.println("pack");
-//			List pack = new ArrayList<Integer>();
-//			for (NewQuadtreeNode node : quadtree.nodes)
-//			{
-//				result.add(node.value);
-//				pack.add(node.value);
-//				System.out.println(". " + node.value);
-//			}
-//			result2.add(pack);
-//		}
-//		
-//		if (quadtree.NE != null)
-//		{
-//			result.addAll(getList(quadtree.NE));
-//			result.addAll(getList(quadtree.NW));
-//			result.addAll(getList(quadtree.SE));
-//			result.addAll(getList(quadtree.SW));
-//		}
-//		
-//		return result;
-//	}
 
 	public static List getFullList(Quadtree quadtree)
 	{

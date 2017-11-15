@@ -9,7 +9,7 @@ import asteroids.components.Geometry2D.Rigidbody2DComponent;
 import asteroids.components.Geometry2D.Transform2DComponent;
 import asteroids.geometry.GeometryUtils;
 import asteroids.math.Quadtree;
-import asteroids.math._Quadtree;
+import asteroids.math.QuadtreeAABB;
 import asteroids.math.Vector2f;
 import asteroids.subsystems.physics2D.CollisionData;
 import asteroids.subsystems.physics2D.CollisionTestCircleCircle;
@@ -47,17 +47,20 @@ public class Physics2DCollisionSubsystem extends Subsystem
 //			//TODO: size of AABB + movement vector = sweep AABB!!!
 //			quadtree.insert(insert, entityId);
 		
-		Quadtree quadtree = new Quadtree(4, new Vector2f(-2, -2), 4, 4);
+		QuadtreeAABB quadtree = new QuadtreeAABB(4, new Vector2f(-2, -2), 4, 4);
 		for(int entityId : this.getList("primary"))
 		{
+			Physics2DAABB aabb = world.getComponent(entityId, Collider2DComponent.class).aabb;
 			Vector2f position = world.getComponent(entityId, Transform2DComponent.class).transform.position;
-			quadtree.insert(position, entityId);
+			Physics2DAABB box = new Physics2DAABB(aabb.min.add(position), aabb.max.add(position));
+			quadtree.insert(box, entityId);
 		}
 
 		//NewQuadtree.search(quadtree);
-		List<List<Integer>> cycle = Quadtree.getFullList(quadtree);
+		List<List<Integer>> cycle = QuadtreeAABB.getFullList(quadtree);
 		for(List<Integer> collisionList : cycle)
 		{
+			//System.out.println("list: " + cycle);
 			collide(collisionList, world, delta);
 //			for(int collidingEntity : collisionList)
 //			{

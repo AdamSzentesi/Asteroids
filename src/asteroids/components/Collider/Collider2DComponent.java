@@ -10,7 +10,7 @@ public class Collider2DComponent extends Component
 {
 	public Collider2DShape collider2DShape;
 	public Vector2f position = new Vector2f();
-	public Physics2DAABB aabb = new Physics2DAABB(new Vector2f(-0.01f, -0.01f), new Vector2f(0.01f, 0.01f));
+	public Physics2DAABB aabb = new Physics2DAABB(new Vector2f(-0.1f, -0.1f), new Vector2f(0.1f, 0.1f));
 	public boolean isTrigger = false;
 	public int target;
 	
