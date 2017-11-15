@@ -7,7 +7,7 @@ import asteroids.components.Collider.*;
 import asteroids.components.Collider.Shapes.*;
 import asteroids.components.Geometry2D.*;
 import asteroids.components.Geometry3D.Transform3DComponent;
-import asteroids.math.Quadtree;
+import asteroids.math._Quadtree;
 import asteroids.math.Vector2f;
 import asteroids.subsystems.*;
 import asteroids.subsystems.physics2D.Physics2DAABB;

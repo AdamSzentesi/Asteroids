@@ -95,7 +95,7 @@ public class Render2DSubsystem extends Subsystem
 			renderVBO(modelTransformMatrix, render2DLineComponent.vbo, render2DLineComponent.ibo, render2DLineComponent.iboCount, render2DLineComponent.color, GL_LINE_STRIP);
 		}
 		//debug
-		//renderColliders(world);
+//		renderColliders(world);
 		this.multisampleFramebuffer.unbind();
 		
 		this.multisampleFramebuffer.resolveToFramebuffer(this.singlesampleFramebuffer);

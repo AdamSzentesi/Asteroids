@@ -9,7 +9,6 @@ public class QuadtreeBounds
 	{
 		this.min = min;
 		this.max = max;
-//		System.out.println("bounds: " + min.x + "," + min.y + " > " + max.x + "," + max.y);
 	}
 	
 	public QuadtreeBounds(Vector2f min, float width, float height)
@@ -25,5 +24,15 @@ public class QuadtreeBounds
 	public float getHeight()
 	{
 		return (this.max.y - this.min.y);
+	}
+	
+	public boolean inInside(Vector2f point)
+	{
+		boolean result = true;
+		if(point.x < this.min.x || point.x > this.max.x || point.y < this.min.y || point.y > this.max.y)
+		{
+			result = false;
+		}
+		return result;
 	}
 }

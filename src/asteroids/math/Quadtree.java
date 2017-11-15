@@ -1,53 +1,144 @@
 package asteroids.math;
 
-import asteroids.subsystems.physics2D.Physics2DAABB;
+import java.util.ArrayList;
 import java.util.List;
+import jdk.nashorn.internal.codegen.CompilerConstants;
 
 public class Quadtree
 {
 	private final int MAX_OBJECTS;
-	private final int MAX_LEVEL;
-	private final QuadtreeNode rootNode;
-	
-	public Quadtree(int MAX_OBJECTS, int MAX_LEVEL, Vector2f min, Vector2f max)
+	private int level = 0;
+	private List<QuadtreeNode> nodes;
+	private Quadtree NW;
+	private Quadtree NE;
+	private Quadtree SE;
+	private Quadtree SW;
+	private QuadtreeBounds bounds;
+
+	public Quadtree(int level, int MAX_OBJECTS, Vector2f leftBottomCorner, float width, float height)
 	{
+		this.level = level;
 		this.MAX_OBJECTS = MAX_OBJECTS;
-		this.MAX_LEVEL = MAX_LEVEL;
-		this.rootNode = new QuadtreeNode(0, MAX_OBJECTS, MAX_LEVEL, new QuadtreeBounds(min, max));
+		this.bounds = new QuadtreeBounds(leftBottomCorner, width, height);
+		this.nodes = new ArrayList<>();
 	}
 	
-	public void insert(Physics2DAABB box, int entityId)
+	public Quadtree(int MAX_OBJECTS, Vector2f leftBottomCorner, float width, float height)
 	{
-		this.rootNode.insert(box, entityId);
+		this(0, MAX_OBJECTS, leftBottomCorner, width, height);
 	}
 	
-	public int getOccupiedCount()
+	public void insert(Vector2f point, int value)
 	{
-		return this.rootNode.getOccupiedCount();
+//		System.out.println("insert " + point.x + "," + point.y);
+		if(!this.bounds.inInside(point)) return;
+		
+		QuadtreeNode node = new QuadtreeNode(point.x, point.y, value);
+		
+		if(this.nodes.size() < this.MAX_OBJECTS)
+		{
+			this.nodes.add(node);
+			return;
+		}
+		
+		split();
+		
+		if(this.NE.bounds.inInside(point)) this.NE.insert(point, value);
+		else if(this.NW.bounds.inInside(point)) this.NW.insert(point, value);
+		else if(this.SE.bounds.inInside(point)) this.SE.insert(point, value);
+		else if(this.SW.bounds.inInside(point)) this.SW.insert(point, value);
+		else System.out.println("ERROR: Unhandled partition " + point.x + "," + point.y);
 	}
 	
-	public List<Physics2DAABB> getOccupiedList()
+	public static void search(Quadtree quadtree)
 	{
-		return this.rootNode.getOccupiedList();
+		if (quadtree == null) return;
+		
+		System.out.println("Level = " + quadtree.level + " :" + quadtree.bounds.min.x + "," + quadtree.bounds.min.y + " > " + quadtree.bounds.max.x + "," + quadtree.bounds.max.y);
+		if(quadtree.nodes.isEmpty())
+		{
+			System.out.println(".leaf");
+		}
+		else
+		{
+			for (QuadtreeNode node : quadtree.nodes)
+			{
+				System.out.println(". " + node.value);
+			}
+		}
+		
+		search(quadtree.NE);
+		search(quadtree.NW);
+		search(quadtree.SE);
+		search(quadtree.SW);
 	}
 	
-	public List<Physics2DAABB> getHierarchyList(Physics2DAABB box)
+//	public static List getList(NewQuadtree quadtree)
+//	{
+//		List result = new ArrayList<Integer>();
+//		List result2 = new ArrayList<ArrayList<Integer>>();
+//		
+//		if(!quadtree.nodes.isEmpty())
+//		{
+//			System.out.println("pack");
+//			List pack = new ArrayList<Integer>();
+//			for (NewQuadtreeNode node : quadtree.nodes)
+//			{
+//				result.add(node.value);
+//				pack.add(node.value);
+//				System.out.println(". " + node.value);
+//			}
+//			result2.add(pack);
+//		}
+//		
+//		if (quadtree.NE != null)
+//		{
+//			result.addAll(getList(quadtree.NE));
+//			result.addAll(getList(quadtree.NW));
+//			result.addAll(getList(quadtree.SE));
+//			result.addAll(getList(quadtree.SW));
+//		}
+//		
+//		return result;
+//	}
+
+	public static List getFullList(Quadtree quadtree)
 	{
-		return this.rootNode.getHierarchyList(box);
+		List result = new ArrayList<ArrayList<Integer>>();
+		
+		if(!quadtree.nodes.isEmpty())
+		{
+//			System.out.println("pack");
+			List pack = new ArrayList<Integer>();
+			for (QuadtreeNode node : quadtree.nodes)
+			{
+				pack.add(node.value);
+//				System.out.println(". " + node.value);
+			}
+			result.add(pack);
+		}
+		
+		if (quadtree.NE != null)
+		{
+			result.addAll(getFullList(quadtree.NE));
+			result.addAll(getFullList(quadtree.NW));
+			result.addAll(getFullList(quadtree.SE));
+			result.addAll(getFullList(quadtree.SW));
+		}
+		
+		return result;
 	}
 	
-	public void clear()
+	private void split()
 	{
-		this.rootNode.clear();
-	}
-	
-	public List<Integer> getEntityOccupiedList()
-	{
-		return this.rootNode.getEntityOccupiedList();
-	}
-	
-	public List<Integer> getEntitiesList(Physics2DAABB box)
-	{
-		return this.rootNode.getEntitiesList(box);
+		if(this.NE != null) return;
+		
+		float halfWidth = this.bounds.getWidth() / 2f;
+		float halfHeight = this.bounds.getHeight() / 2f;
+		
+		this.NE = new Quadtree(this.level + 1, MAX_OBJECTS, this.bounds.min.add(new Vector2f(0, halfHeight)), halfWidth, halfHeight);
+		this.NW = new Quadtree(this.level + 1, MAX_OBJECTS, this.bounds.min.add(new Vector2f(halfWidth, halfHeight)), halfWidth, halfHeight);
+		this.SE = new Quadtree(this.level + 1, MAX_OBJECTS, this.bounds.min.add(new Vector2f(halfWidth, 0)), halfWidth, halfHeight);
+		this.SW = new Quadtree(this.level + 1, MAX_OBJECTS, this.bounds.min, halfWidth, halfHeight);
 	}
 }
