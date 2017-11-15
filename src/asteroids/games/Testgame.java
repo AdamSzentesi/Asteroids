@@ -57,7 +57,7 @@ public class Testgame extends Game
 //		world.addSubsystem(SimplePhysics2DSubsystem.class, transform2DComponentKey | rigidbody2DComponentKey);
 //			world.getSubsystem(SimplePhysics2DSubsystem.class).addLock("colliders", collider2DComponentKey | transform2DComponentKey);
 		world.addSubsystem(Physics2DMoveSubsystem.class, transform2DComponentKey | rigidbody2DComponentKey);
-		world.addSubsystem(Physics2DMoveSubsystem.class, transform2DComponentKey | collider2DComponentKey);
+		world.addSubsystem(Physics2DCollisionSubsystem.class, transform2DComponentKey | collider2DComponentKey);
 		world.addSubsystem(FieldSubsystem.class, transform2DComponentKey);
 		world.addSubsystem(Projectile2DSubsystem.class, transform2DComponentKey | projectile2DComponentKey);
 		world.addSubsystem(AsteroidSubsystem.class, asteroidComponentKey | transform2DComponentKey | collider2DComponentKey | rotateComponentKey);
@@ -152,24 +152,6 @@ public class Testgame extends Game
 	@Override
 	public void cleanUp()
 	{
-		//test
-		Quadtree wtf = new Quadtree(3, 3, new Vector2f(-5, -5), new Vector2f(5, 5));
-		wtf.insert(new Physics2DAABB(new Vector2f(1, 1), new Vector2f(1.1f, 2)));
-		wtf.insert(new Physics2DAABB(new Vector2f(3, 1), new Vector2f(3.1f, 2)));
-		wtf.insert(new Physics2DAABB(new Vector2f(4, -2), new Vector2f(5, -1)));
-		wtf.insert(new Physics2DAABB(new Vector2f(4, -2), new Vector2f(5, 1)));
-		wtf.insert(new Physics2DAABB(new Vector2f(3, 3), new Vector2f(4, 4)));
-		wtf.insert(new Physics2DAABB(new Vector2f(4, -2), new Vector2f(5, 1)));
-		System.out.println("OCCUPIED: " + wtf.getOccupiedCount());
-		for(Physics2DAABB box : wtf.getOccupiedList())
-		{
-			System.out.println("root " + box.hashCode());
-			for(Physics2DAABB hierarchy : wtf.getHierarchyList(box))
-			{
-				System.out.println("- hash " + hierarchy.hashCode());
-			}
-		}
-
 		this.world.cleanUp();
 	}
 	

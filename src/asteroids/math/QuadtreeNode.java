@@ -12,6 +12,7 @@ public class QuadtreeNode
 	private final int MAX_LEVEL;
 	private QuadtreeNode[] nodes;
 	private List<Physics2DAABB> objects;
+	private List<Integer> entities;
 	private List<Integer> indices;
 	private QuadtreeBounds bounds;
 	private boolean occupied;
@@ -24,20 +25,22 @@ public class QuadtreeNode
 		this.MAX_LEVEL = MAX_LEVEL;
 		this.nodes = new QuadtreeNode[4];
 		this.objects = new ArrayList<>();
+		this.entities = new ArrayList<>();
 		this.indices = new ArrayList<>();
 		this.bounds = bounds;
 		this.occupied = false;
 	}
 	
-	public void insert(Physics2DAABB box)
+	public void insert(Physics2DAABB box, int entityId)
 	{
 		int index = getIndex(box);
 		
 		//early exit: object is on the edge
 		if(index == -1)
 		{
-			System.out.println(box.hashCode() + " is on the edge of level " + level);
+//			System.out.println(box.hashCode() + " is on the edge of level " + level);
 			this.objects.add(box);
+			this.entities.add(entityId);
 			this.indices.add(index);
 			return;
 		}
@@ -45,19 +48,20 @@ public class QuadtreeNode
 		//early exit: this branch is on the maximal level
 		if(this.level == this.MAX_LEVEL)
 		{
-			System.out.println(box.hashCode() + " is on level " + level + " (" + index + ")");
+//			System.out.println(box.hashCode() + " is on level " + level + " (" + index + ")");
 			this.objects.add(box);
+			this.entities.add(entityId);
 			this.indices.add(index);
 			this.occupied = true;
 			return;
 		}
 		
-		//early exit:
-		// this branch is not full yet
+		//early exit: this branch is not full yet
 		if(this.objects.size() < this.MAX_OBJECTS && this.nodes[0] == null)
 		{
-			System.out.println(box.hashCode() + " is on level " + level + " (" + index + ")");
+//			System.out.println(box.hashCode() + " is on level " + level + " (" + index + ")");
 			this.objects.add(box);
+			this.entities.add(entityId);
 			this.indices.add(index);
 			this.occupied = true;
 			return;
@@ -65,17 +69,12 @@ public class QuadtreeNode
 		
 		if(this.nodes[0] == null)
 		{
-			System.out.println(box.hashCode() + " split " + level + " (" + index + ")");
+//			System.out.println(box.hashCode() + " split " + level + " (" + index + ")");
 			split();
 			redistribute();		
 		}
 
-		this.nodes[index].insert(box);
-	}
-	
-	public int getw()
-	{
-		return 0;
+		this.nodes[index].insert(box, entityId);
 	}
 	
 	private void split()
@@ -99,7 +98,7 @@ public class QuadtreeNode
 			index = this.indices.get(i);
 			if(index != -1)
 			{
-				this.nodes[index].insert(this.objects.remove(i));
+				this.nodes[index].insert(this.objects.remove(i), this.entities.remove(i));
 				this.indices.remove(i);
 			}
 			else
@@ -108,7 +107,7 @@ public class QuadtreeNode
 			}
 		}
 		this.occupied = false;
-		System.out.println(this.level + " " + this.occupied);
+//		System.out.println(this.level + " " + this.occupied);
 	}
 	
 	public List<Physics2DAABB> getOccupiedList()
@@ -140,6 +139,39 @@ public class QuadtreeNode
 		}
 		
 		result.addAll(this.objects);
+		
+		return result;
+	}
+	
+	public List<Integer> getEntityOccupiedList()
+	{
+		List<Integer> result = new ArrayList<>();
+		
+		if(this.nodes[0] != null)
+		{
+			for(QuadtreeNode node : this.nodes)
+			{
+				result.addAll(node.getEntityOccupiedList());
+			}
+		}
+		if(this.occupied)
+		{
+			result.add(this.entities.get(0));
+		}
+		return result;
+	}
+	
+	public List<Integer> getEntitiesList(Physics2DAABB box)
+	{
+		List<Integer> result = new ArrayList<>();
+
+		int index = getIndex(box);
+		if(index != -1 && this.nodes[0] != null)
+		{
+			result.addAll(this.nodes[index].getEntitiesList(box));
+		}
+		
+		result.addAll(this.entities);
 		
 		return result;
 	}

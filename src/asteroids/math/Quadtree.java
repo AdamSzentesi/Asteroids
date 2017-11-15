@@ -16,9 +16,9 @@ public class Quadtree
 		this.rootNode = new QuadtreeNode(0, MAX_OBJECTS, MAX_LEVEL, new QuadtreeBounds(min, max));
 	}
 	
-	public void insert(Physics2DAABB box)
+	public void insert(Physics2DAABB box, int entityId)
 	{
-		this.rootNode.insert(box);
+		this.rootNode.insert(box, entityId);
 	}
 	
 	public int getOccupiedCount()
@@ -39,5 +39,15 @@ public class Quadtree
 	public void clear()
 	{
 		this.rootNode.clear();
+	}
+	
+	public List<Integer> getEntityOccupiedList()
+	{
+		return this.rootNode.getEntityOccupiedList();
+	}
+	
+	public List<Integer> getEntitiesList(Physics2DAABB box)
+	{
+		return this.rootNode.getEntitiesList(box);
 	}
 }
