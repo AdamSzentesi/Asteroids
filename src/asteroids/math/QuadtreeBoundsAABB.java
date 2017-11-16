@@ -28,23 +28,28 @@ public class QuadtreeBoundsAABB
 		return (this.max.y - this.min.y);
 	}
 	
+	//very slow!!!
 	public boolean isInside(Physics2DAABB box)
 	{
 		boolean result = false;
-		if(isInside(box.min) || isInside(box.min))
+		float halfWidth = box.getWidth() / 2;
+		float halfHeight = box.getHeight() / 2;
+		float positionX = box.min.x + halfWidth;
+		float positionY = box.min.y + halfHeight;
+
+		if
+		(
+			positionX >= this.min.x - halfWidth &&
+			positionX <= this.max.x + halfWidth &&
+			positionY >= this.min.y - halfHeight &&
+			positionY <= this.max.y + halfHeight
+		)
 		{
 			result = true;
 		}
+//		System.out.println(isInside(box.min) + " | " + isInside(box.max));
+
 		return result;
 	}
 	
-	public boolean isInside(Vector2f point)
-	{
-		boolean result = true;
-		if(point.x < this.min.x || point.x > this.max.x || point.y < this.min.y || point.y > this.max.y)
-		{
-			result = false;
-		}
-		return result;
-	}
 }

@@ -42,7 +42,7 @@ public class ShootSubsystem extends Subsystem
 							Vector2f velocity = new Vector2f(0, 2).rotate(transform2DComponent.transform.rotation);
 							if(world.hasEntityComponent(entityId, Rigidbody2DComponent.class))
 							{
-								//velocity = velocity.add(world.getComponent(entityId, Rigidbody2DComponent.class).velocity);
+//								velocity = velocity.add(world.getComponent(entityId, Rigidbody2DComponent.class).velocity);
 							}
 							summon(world, transform2DComponent, velocity);
 							shootComponent.lastShootTime = shootComponent.reloadTime;

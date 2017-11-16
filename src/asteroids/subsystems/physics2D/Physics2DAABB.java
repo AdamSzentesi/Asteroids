@@ -12,4 +12,14 @@ public class Physics2DAABB
 		this.min = min;
 		this.max = max;
 	}
+	
+	public float getWidth()
+	{
+		return (this.max.x - this.min.x);
+	}
+	
+	public float getHeight()
+	{
+		return (this.max.y - this.min.y);
+	}
 }
