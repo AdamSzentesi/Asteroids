@@ -164,8 +164,13 @@ public class World
 	 */
 	public boolean hasEntityComponent(int entityId, Class componentClass)
 	{
-		boolean result = false;
 		long componentKey = this.componentManager.getComponentKey(componentClass);
+		return hasEntityComponent(entityId, componentKey);
+	}
+	
+	public boolean hasEntityComponent(int entityId, long componentKey)
+	{
+		boolean result = false;
 		long entityKey = this.entityManager.getEntityKey(entityId);
 		if(entityKey == (entityKey | componentKey))
 		{

@@ -110,7 +110,7 @@ public class Testgame extends Game
 			world.getComponent(player, InputComponent.class).commands.put("KEY_LEFT", "TURN_LEFT");
 			world.getComponent(player, InputComponent.class).commands.put("KEY_RIGHT", "TURN_RIGHT");
 		world.addComponent(player, ShootComponent.class);
-			world.getComponent(player, ShootComponent.class).reloadTime = 0.1f;
+			world.getComponent(player, ShootComponent.class).reloadTime = 0.01f;
 		world.addComponent(player, ThrustComponent.class);
 			world.getComponent(player, ThrustComponent.class).force = 10.0f;
 		world.addComponent(player, TurnComponent.class);
@@ -137,6 +137,8 @@ public class Testgame extends Game
 		//SUBSYSTEM ADDITIONS
 		world.getSubsystem(Render2DSubsystem.class).setActiveCamera(world, camera);
 		world.getSubsystem(Projectile2DSubsystem.class).setIgnored(player);
+		world.getSubsystem(Physics2DCollisionSubsystem.class).addIgnoreKey(asteroidComponentKey);
+		world.getSubsystem(Physics2DCollisionSubsystem.class).addIgnoreKey(projectile2DComponentKey);
 		//world.getComponent(camera, Transform3DComponent.class).setParent(player);
 	}
 
