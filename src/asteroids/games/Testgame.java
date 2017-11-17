@@ -7,12 +7,9 @@ import asteroids.components.Collider.*;
 import asteroids.components.Collider.Shapes.*;
 import asteroids.components.Geometry2D.*;
 import asteroids.components.Geometry3D.Transform3DComponent;
-import asteroids.math._Quadtree;
 import asteroids.math.Vector2f;
 import asteroids.subsystems.*;
-import asteroids.subsystems.physics2D.Physics2DAABB;
 import static org.lwjgl.opengl.GL11.glClearColor;
-import sun.awt.windows.awtLocalization_fr;
 
 public class Testgame extends Game
 {

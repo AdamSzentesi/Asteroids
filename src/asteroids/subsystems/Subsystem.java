@@ -55,8 +55,8 @@ abstract public class Subsystem
 
 		long endTime = System.nanoTime();
 		float millis = (float)(endTime - startTime)/1000000;
-		//if(millis > 1)
-			//System.out.println(this.getClass().getSimpleName() + " time: " + millis);
+//		if(millis > 1)
+//			System.out.println(this.getClass().getSimpleName() + " time: " + millis);
 	}
 	
 	//Iteration sequence

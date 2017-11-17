@@ -2,14 +2,13 @@ package asteroids.subsystems;
 
 import asteroids.Message;
 import asteroids.World;
-import asteroids.components.AsteroidComponent;
 import asteroids.components.Collider.Collider2DComponent;
 import asteroids.components.Collider.Shapes.Collider2DShapeCircle;
 import asteroids.components.Collider.Shapes.Collider2DShapePoint;
 import asteroids.components.Geometry2D.Rigidbody2DComponent;
 import asteroids.components.Geometry2D.Transform2DComponent;
 import asteroids.geometry.GeometryUtils;
-import asteroids.math.QuadtreeAABB;
+import asteroids.math.Grid;
 import asteroids.math.Vector2f;
 import asteroids.subsystems.physics2D.CollisionData;
 import asteroids.subsystems.physics2D.CollisionTestCircleCircle;
@@ -24,6 +23,7 @@ import java.util.List;
 public class Physics2DCollisionSubsystem extends Subsystem
 {
 	private final float distanceBuffer = 0.01f;
+	private Grid grid = new Grid(16, new Vector2f(-2, -2), 4, 4);
 	
 	private final CollisionTestPointCircle collisionTestPointCircle = new CollisionTestPointCircle();
 	private final CollisionTestCircleLine collisionTestCircleLine = new CollisionTestCircleLine();
@@ -42,17 +42,20 @@ public class Physics2DCollisionSubsystem extends Subsystem
 	public void process(World world, float delta)
 	{
 		long time0 = System.nanoTime();
-		QuadtreeAABB quadtree = new QuadtreeAABB(4, 20, new Vector2f(-2, -2), 4, 4);
+
+		//grid
+		this.grid.clear();
 		for(int entityId : this.getList("primary"))
 		{
 			Physics2DAABB aabb = world.getComponent(entityId, Collider2DComponent.class).aabb;
 			Vector2f position = world.getComponent(entityId, Transform2DComponent.class).transform.position;
 			Physics2DAABB box = new Physics2DAABB(aabb.min.add(position), aabb.max.add(position));
-			quadtree.insert(box, entityId);
+			grid.insert(box, entityId);
 		}
+		
 //		System.out.println("time 1: " + (System.nanoTime() - time0));
 		
-		List<List<Integer>> cycle = QuadtreeAABB.getFullList(quadtree);
+		List<List<Integer>> cycle = grid.getFullList();
 		for(List<Integer> collisionList : cycle)
 		{
 			collide(collisionList, world, delta);
@@ -75,80 +78,73 @@ public class Physics2DCollisionSubsystem extends Subsystem
 				//iterate through comparing colliders
 				for(int b = a + 1; b < colliders.size(); b++)
 				{
+					//TODO: collision groups, ignores
 					int entityIdB = colliders.get(b);
-					if(world.hasEntityComponent(entityIdA, AsteroidComponent.class) && world.hasEntityComponent(entityIdB, AsteroidComponent.class))
+					Transform2DComponent transform2DComponentB = world.getComponent(entityIdB, Transform2DComponent.class);
+					Collider2DComponent collider2DComponentB = world.getComponent(entityIdB, Collider2DComponent.class);				
+					Vector2f positionB = transform2DComponentB.transform.getMatrix().transform(collider2DComponentB.position);
+					Vector2f lastPositionB = transform2DComponentB.lastTransform.getMatrix().transform(collider2DComponentB.position);
+
+					CollisionData collisionData = new CollisionData();
+//					System.out.println(entityIdA + " vs " + entityIdB);
+
+					//sort collisions by collider shape
+					int shapeKeyComposite = collider2DComponentA.getShapeKey() | collider2DComponentB.getShapeKey();
+					//circle x circle collision
+					if(shapeKeyComposite == (this.shapeKeyCircle | this.shapeKeyCircle))
 					{
+						collisionData = collisionTestCircleCircle.test(lastPositionA, positionA, collider2DComponentA.getShape(Collider2DShapeCircle.class), lastPositionB, positionB, collider2DComponentB.getShape(Collider2DShapeCircle.class), distanceBuffer);
 					}
-					else
+					//point x circle collision
+					if(shapeKeyComposite == (this.shapeKeyPoint | this.shapeKeyCircle))
 					{
-						CollisionData collisionData = new CollisionData();
-
-						Transform2DComponent transform2DComponentB = world.getComponent(entityIdB, Transform2DComponent.class);
-						Collider2DComponent collider2DComponentB = world.getComponent(entityIdB, Collider2DComponent.class);				
-						Vector2f positionB = transform2DComponentB.transform.getMatrix().transform(collider2DComponentB.position);
-						Vector2f lastPositionB = transform2DComponentB.lastTransform.getMatrix().transform(collider2DComponentB.position);
-
-	//					System.out.println(entityIdA + " vs " + entityIdB);
-
-						//sort collisions by collider shape
-						int shapeKeyComposite = collider2DComponentA.getShapeKey() | collider2DComponentB.getShapeKey();
-						//circle x circle collision
-						if(shapeKeyComposite == (this.shapeKeyCircle | this.shapeKeyCircle))
-						{
-							collisionData = collisionTestCircleCircle.test(lastPositionA, positionA, collider2DComponentA.getShape(Collider2DShapeCircle.class), lastPositionB, positionB, collider2DComponentB.getShape(Collider2DShapeCircle.class), distanceBuffer);
-						}
-						//point x circle collision
-						if(shapeKeyComposite == (this.shapeKeyPoint | this.shapeKeyCircle))
-						{
-							if(collider2DComponentA.getShapeKey() == this.shapeKeyPoint)
-								collisionData = collisionTestPointCircle.test(lastPositionA, positionA, collider2DComponentA.getShape(Collider2DShapePoint.class), lastPositionB, positionB, collider2DComponentB.getShape(Collider2DShapeCircle.class), distanceBuffer);
-							else
-								collisionData = collisionTestPointCircle.test(lastPositionB, positionB, collider2DComponentB.getShape(Collider2DShapePoint.class), lastPositionA, positionA, collider2DComponentA.getShape(Collider2DShapeCircle.class), distanceBuffer);
-						}
-
-	//RESOLUTION
-						Rigidbody2DComponent rigidbody2DComponentA = world.getComponent(entityIdA, Rigidbody2DComponent.class);
-						Rigidbody2DComponent rigidbody2DComponentB = world.getComponent(entityIdB, Rigidbody2DComponent.class);
-
-						if(collisionData.collided)
-						{
-							//SLIDE
-							Vector2f slideDirection = new Vector2f(collisionData.collisionNormal.y, -collisionData.collisionNormal.x);
-							float slideTime = (1 - collisionData.collisionTime) * delta;
-
-							if(collisionData.collisionTime <= 0)
-							{
-								Vector2f collisionPositionA = getCollisionPosition(transform2DComponentA, collisionData.collisionTime);
-								Vector2f collisionPositionB = getCollisionPosition(transform2DComponentB, collisionData.collisionTime);						
-
-	//							//TMP
-	//							System.out.println(collisionPositionA.x + "," + collisionPositionA.y);
-	//							System.out.println(collisionPositionB.x + "," + collisionPositionB.y);
-	//							transform2DComponentA.transform.position.set(collisionPositionA);
-	//							transform2DComponentB.transform.position.set(collisionPositionB);
-							}
-
-							Vector2f slideVelocityA = getSlideVelocity(rigidbody2DComponentA, slideDirection);
-							Vector2f slideVelocityB = getSlideVelocity(rigidbody2DComponentB, slideDirection);
-
-							if(collisionData.collisionTime != 0)
-							{
-								rigidbody2DComponentA.lastVelocity.set(slideVelocityA);
-								rigidbody2DComponentB.lastVelocity.set(slideVelocityB);
-							}
-	//						
-	//						//TMP
-	//						rigidbody2DComponentA.velocity.set(0, 0);
-	//						rigidbody2DComponentB.velocity.set(0, 0);
-
-							transform2DComponentA.lastCollisionNormal = collisionData.collisionNormal;
-							transform2DComponentB.lastCollisionNormal = collisionData.collisionNormal.multiply(-1);
-
-							this.sendMessage(new Message(entityIdA, "HIT", entityIdB));
-							this.sendMessage(new Message(entityIdB, "HIT", entityIdA));
-						}					
+						if(collider2DComponentA.getShapeKey() == this.shapeKeyPoint)
+							collisionData = collisionTestPointCircle.test(lastPositionA, positionA, collider2DComponentA.getShape(Collider2DShapePoint.class), lastPositionB, positionB, collider2DComponentB.getShape(Collider2DShapeCircle.class), distanceBuffer);
+						else
+							collisionData = collisionTestPointCircle.test(lastPositionB, positionB, collider2DComponentB.getShape(Collider2DShapePoint.class), lastPositionA, positionA, collider2DComponentA.getShape(Collider2DShapeCircle.class), distanceBuffer);
 					}
-					
+
+//RESOLUTION
+					Rigidbody2DComponent rigidbody2DComponentA = world.getComponent(entityIdA, Rigidbody2DComponent.class);
+					Rigidbody2DComponent rigidbody2DComponentB = world.getComponent(entityIdB, Rigidbody2DComponent.class);
+
+					if(collisionData.collided)
+					{
+						//SLIDE
+						Vector2f slideDirection = new Vector2f(collisionData.collisionNormal.y, -collisionData.collisionNormal.x);
+						float slideTime = (1 - collisionData.collisionTime) * delta;
+
+						if(collisionData.collisionTime <= 0)
+						{
+							Vector2f collisionPositionA = getCollisionPosition(transform2DComponentA, collisionData.collisionTime);
+							Vector2f collisionPositionB = getCollisionPosition(transform2DComponentB, collisionData.collisionTime);						
+
+//							//TMP
+//							System.out.println(collisionPositionA.x + "," + collisionPositionA.y);
+//							System.out.println(collisionPositionB.x + "," + collisionPositionB.y);
+//							transform2DComponentA.transform.position.set(collisionPositionA);
+//							transform2DComponentB.transform.position.set(collisionPositionB);
+						}
+
+						Vector2f slideVelocityA = getSlideVelocity(rigidbody2DComponentA, slideDirection);
+						Vector2f slideVelocityB = getSlideVelocity(rigidbody2DComponentB, slideDirection);
+
+						if(collisionData.collisionTime != 0)
+						{
+							rigidbody2DComponentA.lastVelocity.set(slideVelocityA);
+							rigidbody2DComponentB.lastVelocity.set(slideVelocityB);
+						}
+//						
+//						//TMP
+//						rigidbody2DComponentA.velocity.set(0, 0);
+//						rigidbody2DComponentB.velocity.set(0, 0);
+
+						transform2DComponentA.lastCollisionNormal = collisionData.collisionNormal;
+						transform2DComponentB.lastCollisionNormal = collisionData.collisionNormal.multiply(-1);
+
+						this.sendMessage(new Message(entityIdA, "HIT", entityIdB));
+						this.sendMessage(new Message(entityIdB, "HIT", entityIdA));
+					}
 				}
 			}
 		}
