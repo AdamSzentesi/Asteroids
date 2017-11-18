@@ -2,7 +2,7 @@ package asteroids;
 
 import asteroids.components.Component;
 
-public abstract class aComponentManager
+public abstract class AbstractComponentManager
 {
 	/**
 	 * Registers the component type in the ComponentManager
@@ -16,11 +16,7 @@ public abstract class aComponentManager
 	
 	abstract <T extends Component> T getComponent(int entityId, Class<T> componentClass);
 	
-	abstract void destroyComponentOnEntity(int entityId);
-	
-	abstract int getComponentId(Class componentClass);
+	abstract void destroyComponentsOnEntity(int entityId);
 	
 	abstract long getComponentKey(Class componentClass);
-	
-	abstract String getComponentType(int id);
 }

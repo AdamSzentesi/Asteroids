@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ComponentManager extends AComponentManager
+public class ComponentManager extends AbstractComponentManager
 {
 	private int MAX_COMPONENTS;
 	private int MAX_ENTITIES;

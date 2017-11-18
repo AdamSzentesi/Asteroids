@@ -4,7 +4,7 @@ import asteroids.components.Component;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ComponentManager1 extends AComponentManager
+public class ComponentManager1 extends AbstractComponentManager
 {
 	private int MAX_COMPONENTS;
 	private String[] componentTypes;//remove!!!

@@ -12,7 +12,7 @@ public class World
 	
 	private EntityManager entityManager;
 	private SubsystemManager subsystemManager;
-	private AComponentManager componentManager;
+	private AbstractComponentManager componentManager;
 	
 	private ArrayList<Pair<Integer, Long>> entitiesToCreate = new ArrayList<>();
 	private ArrayList<Integer> entitiesToDestroy = new ArrayList<>();
