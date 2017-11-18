@@ -30,7 +30,7 @@ public class Collider2DShapeMultiline extends Collider2DShape
 			indices[i * 2] = i * 2;
 			indices[i * 2 + 1] = i * 2 + 1;
 		}
-		this.debug2DPrimitive = new Debug2DPrimitiveMultiline(vertices, indices);
+		//this.debug2DPrimitive = new Debug2DPrimitiveMultiline(vertices, indices);
 		this.shapeKey = 1 << 3;
 	}
 	
@@ -53,7 +53,7 @@ public class Collider2DShapeMultiline extends Collider2DShape
 			indices[i * 2] = i * 2;
 			indices[i * 2 + 1] = i * 2 + 1;
 		}
-		this.debug2DPrimitive = new Debug2DPrimitiveMultiline(vertices, indices);
+		//this.debug2DPrimitive = new Debug2DPrimitiveMultiline(vertices, indices);
 		this.shapeKey = 1 << 3;
 	}
 	

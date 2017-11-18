@@ -92,5 +92,13 @@ public class SubsystemManager
 			subsystem.cleanUp();
 		}	
 	}
+
+	public void removeFromEntityList(int entityId)
+	{
+		for (Subsystem subsystem : this.subsystems.values())
+		{
+			subsystem.removeFromEntityList(entityId);
+		}
+	}
 	
 }

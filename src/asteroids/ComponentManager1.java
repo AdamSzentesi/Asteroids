@@ -4,7 +4,7 @@ import asteroids.components.Component;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ComponentManager1 extends aComponentManager
+public class ComponentManager1 extends AComponentManager
 {
 	private int MAX_COMPONENTS;
 	private String[] componentTypes;//remove!!!
@@ -74,7 +74,7 @@ public class ComponentManager1 extends aComponentManager
 	}
 	
 	@Override
-	public void destroyComponentOnEntity(int entityId)
+	public void destroyComponentsOnEntity(int entityId)
 	{
 		for(int componentId : this.entityComponentRelations[entityId])
 		{
@@ -82,7 +82,6 @@ public class ComponentManager1 extends aComponentManager
 		}
 	}
 	
-	@Override
 	public int getComponentId(Class componentClass)
 	{
 		int result = 0;
@@ -104,7 +103,6 @@ public class ComponentManager1 extends aComponentManager
 		return result;
 	}
 	
-	@Override
 	public String getComponentType(int id)
 	{
 		String result = this.componentTypes[id];

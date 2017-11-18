@@ -35,6 +35,8 @@ public class Render2DSubsystem extends Subsystem
 	
 	public Render2DSubsystem()
 	{
+		super();
+		
 		//shader setup
 		shader = new Shader();
 		shader.addShader("render2D/line2D.vs", GL_VERTEX_SHADER);
@@ -45,11 +47,12 @@ public class Render2DSubsystem extends Subsystem
 		shader.addOutput(0, "outDiffuse");
 		shader.link();
 		shader.addUniform("M");
+		shader.addUniform("V");
 		shader.addUniform("P");
 		
 		//default camera setup
 		this.cameraComponent = new CameraComponent();
-			this.cameraComponent.projection.initPerspective(45f, (float)Display.getWidth()/Display.getHeight(), 0.001f, 100.0f);
+		this.cameraComponent.projection.initPerspective(45f, (float)Display.getWidth()/Display.getHeight(), 0.001f, 100.0f);
 		
 		this.multisampleFramebuffer = new Framebuffer(Display.getWidth(), Display.getHeight(), 4);
 		this.multisampleFramebuffer.createRenderbuffer(GL_RGBA8, GL_COLOR_ATTACHMENT0, true);
@@ -78,7 +81,7 @@ public class Render2DSubsystem extends Subsystem
 	{
 		glLineWidth(1);
 		//get current camera view matrix
-		this.viewTransformMatrix = world.getComponent(this.cameraEntityId, Transform3DComponent.class).viewMatrix();
+		this.viewTransformMatrix = world.getComponent(this.cameraEntityId, CameraComponent.class).viewMatrix;
 		
 //RENDERING TO BUFFEROBJECT
 		this.multisampleFramebuffer.bind();
@@ -112,81 +115,7 @@ public class Render2DSubsystem extends Subsystem
 		glViewport(0, 0, Display.getWidth(), Display.getHeight());
 		this.effectManager.getEffect("draw", DrawEffect.class).apply(finalOutput);
 
-		
-	}
-	
-	private void renderColliders(World world)
-	{
-		//iterate through colliders
-		for(int entityId : this.getList("colliders"))
-		{
-			Collider2DComponent collider2DComponent = world.getComponent(entityId, Collider2DComponent.class);
-			Transform2DComponent transform2DComponent = world.getComponent(entityId, Transform2DComponent.class);
-
-			//get collider position
-			Vector2f colliderPosition = collider2DComponent.position;
-			Matrix4f colliderPositionMatrix = new Matrix4f().initTranslation(colliderPosition.x, colliderPosition.y, 0);
-			//get collider scale
-			Vector2f colliderScale = collider2DComponent.getColliderSize();
-			Matrix4f colliderScaleMatrix = new Matrix4f().initScale(colliderScale.x, colliderScale.y, 1);
-			//final matrix
-			Matrix4f colliderMatrix = colliderPositionMatrix;
-							
-			//render collider
-			Matrix4f worldMatrix = transform2DComponent.getWorldMatrix();
-			String colliderShapeClass = collider2DComponent.collider2DShape.getClass().getSimpleName();
-			Debug2DPrimitive primitive = new Debug2DPrimitive();
-			int	primitiveType = GL_LINE_STRIP;
-			switch (colliderShapeClass)
-			{
-				case "Collider2DShapeRectangle":
-					colliderMatrix = colliderPositionMatrix.multiply(colliderScaleMatrix);
-					primitive = collider2DComponent.getShape(Collider2DShapeRectangle.class).debug2DPrimitive;
-					break;
-				case "Collider2DShapeCircle":
-					colliderMatrix = colliderPositionMatrix.multiply(colliderScaleMatrix);
-					primitive = collider2DComponent.getShape(Collider2DShapeCircle.class).debug2DPrimitive;
-					break;
-				case "Collider2DShapeLine":
-					colliderMatrix = colliderPositionMatrix.multiply(colliderScaleMatrix);
-					primitive = collider2DComponent.getShape(Collider2DShapeLine.class).debug2DPrimitive;
-					break;
-				case "Collider2DShapeMultiline":
-					colliderMatrix = colliderPositionMatrix.multiply(colliderScaleMatrix);
-					primitive = collider2DComponent.getShape(Collider2DShapeMultiline.class).debug2DPrimitive;
-					primitiveType = GL_LINES;
-					break;
-				case "Collider2DShapePoint":
-					colliderMatrix = colliderPositionMatrix.multiply(colliderScaleMatrix);
-					primitive = collider2DComponent.getShape(Collider2DShapePoint.class).debug2DPrimitive;
-					break;
-			}
-			//push to world coords
-			colliderMatrix = worldMatrix.multiply(colliderMatrix);
-			renderVBO(colliderMatrix, primitive.vbo, primitive.ibo, primitive.iboCount, new Vector3f(1.0f, 1.0f, 0.0f), primitiveType);
-
-			//debug
-			//renderAABB(worldMatrix, colliderPosition, transform2DComponent, collider2DComponent);
-		}
-	}
-
-	//render AABB	TEMPORARY!!!!
-	private void renderAABB(Matrix4f worldMatrix, Vector2f colliderPosition, Transform2DComponent transform2DComponent, Collider2DComponent collider2DComponent)
-	{
-		//world rotation
-		float rotation = transform2DComponent.getWorldRotation();
-		Matrix4f colliderAABBRotationMatrix = new Matrix4f().initRotation(0, 0, rotation);
-		//collider scale
-		Vector2f[] colliderAABBSize = collider2DComponent.getAABBSize(colliderAABBRotationMatrix);
-		Vector2f colliderAABBMidpoint = colliderAABBSize[1].add(colliderAABBSize[0]).divide(2f);
-		Vector2f colliderAABBScale = colliderAABBSize[1].subtract(colliderAABBSize[0]);
-		Matrix4f colliderAABBScaleMatrix = new Matrix4f().initScale(colliderAABBScale.x, colliderAABBScale.y, 1);
-		//world position
-		Vector2f colliderAABBPosition = worldMatrix.transform(colliderPosition).add(colliderAABBMidpoint);
-		Matrix4f colliderAABBPositionMatrix = new Matrix4f().initTranslation(colliderAABBPosition.x, colliderAABBPosition.y, 0);
-
-		Matrix4f colliderAABBMatrix = colliderAABBPositionMatrix.multiply(colliderAABBScaleMatrix);
-		renderVBO(colliderAABBMatrix, debug2DPrimitiveRectangle.vbo, debug2DPrimitiveRectangle.ibo, debug2DPrimitiveRectangle.iboCount, new Vector3f(0.0f, 1.0f, 0.0f), GL_LINE_STRIP);
+		System.gc();
 	}
 	
 	//render scene using VBO
@@ -198,17 +127,94 @@ public class Render2DSubsystem extends Subsystem
 		Matrix4f M = modelTransformMatrix;
 		Matrix4f P = this.cameraComponent.projection;
 		this.shader.setUniform("M", M);
+		this.shader.setUniform("V", this.viewTransformMatrix);
 		this.shader.setUniform("P", P);
 		
 		glVertexAttrib3f(4, color.x, color.y, color.z);
 		glEnableVertexAttribArray(0);
 			glBindBuffer(GL_ARRAY_BUFFER, vbo);
 				glVertexAttribPointer(0, 2, GL_FLOAT, false, 2 * 4, 0);
-				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-					glDrawElements(primitiveType, iboCount, GL_UNSIGNED_INT, 0);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+				glDrawElements(primitiveType, iboCount, GL_UNSIGNED_INT, 0);
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glDisableVertexAttribArray(0);
 	}
+	
+//	
+//	private void renderColliders(World world)
+//	{
+//		//iterate through colliders
+//		for(int entityId : this.getList("colliders"))
+//		{
+//			Collider2DComponent collider2DComponent = world.getComponent(entityId, Collider2DComponent.class);
+//			Transform2DComponent transform2DComponent = world.getComponent(entityId, Transform2DComponent.class);
+//
+//			//get collider position
+//			Vector2f colliderPosition = collider2DComponent.position;
+//			Matrix4f colliderPositionMatrix = new Matrix4f().initTranslation(colliderPosition.x, colliderPosition.y, 0);
+//			//get collider scale
+//			Vector2f colliderScale = collider2DComponent.getColliderSize();
+//			Matrix4f colliderScaleMatrix = new Matrix4f().initScale(colliderScale.x, colliderScale.y, 1);
+//			//final matrix
+//			Matrix4f colliderMatrix = colliderPositionMatrix;
+//							
+//			//render collider
+//			Matrix4f worldMatrix = transform2DComponent.getWorldMatrix();
+//			String colliderShapeClass = collider2DComponent.collider2DShape.getClass().getSimpleName();
+//			Debug2DPrimitive primitive = new Debug2DPrimitive();
+//			int	primitiveType = GL_LINE_STRIP;
+//			switch (colliderShapeClass)
+//			{
+//				case "Collider2DShapeRectangle":
+//					colliderMatrix = colliderPositionMatrix.multiply(colliderScaleMatrix);
+//					primitive = collider2DComponent.getShape(Collider2DShapeRectangle.class).debug2DPrimitive;
+//					break;
+//				case "Collider2DShapeCircle":
+//					colliderMatrix = colliderPositionMatrix.multiply(colliderScaleMatrix);
+//					primitive = collider2DComponent.getShape(Collider2DShapeCircle.class).debug2DPrimitive;
+//					break;
+//				case "Collider2DShapeLine":
+//					colliderMatrix = colliderPositionMatrix.multiply(colliderScaleMatrix);
+//					primitive = collider2DComponent.getShape(Collider2DShapeLine.class).debug2DPrimitive;
+//					break;
+//				case "Collider2DShapeMultiline":
+//					colliderMatrix = colliderPositionMatrix.multiply(colliderScaleMatrix);
+//					primitive = collider2DComponent.getShape(Collider2DShapeMultiline.class).debug2DPrimitive;
+//					primitiveType = GL_LINES;
+//					break;
+//				case "Collider2DShapePoint":
+//					colliderMatrix = colliderPositionMatrix.multiply(colliderScaleMatrix);
+//					primitive = collider2DComponent.getShape(Collider2DShapePoint.class).debug2DPrimitive;
+//					break;
+//			}
+//			//push to world coords
+//			colliderMatrix = worldMatrix.multiply(colliderMatrix);
+//			renderVBO(colliderMatrix, primitive.vbo, primitive.ibo, primitive.iboCount, new Vector3f(1.0f, 1.0f, 0.0f), primitiveType);
+//
+//			//debug
+//			//renderAABB(worldMatrix, colliderPosition, transform2DComponent, collider2DComponent);
+//		}
+//	}
+//
+//	//render AABB	TEMPORARY!!!!
+//	private void renderAABB(Matrix4f worldMatrix, Vector2f colliderPosition, Transform2DComponent transform2DComponent, Collider2DComponent collider2DComponent)
+//	{
+//		//world rotation
+//		float rotation = transform2DComponent.getWorldRotation();
+//		Matrix4f colliderAABBRotationMatrix = new Matrix4f().initRotation(0, 0, rotation);
+//		//collider scale
+//		Vector2f[] colliderAABBSize = collider2DComponent.getAABBSize(colliderAABBRotationMatrix);
+//		Vector2f colliderAABBMidpoint = colliderAABBSize[1].add(colliderAABBSize[0]).divide(2f);
+//		Vector2f colliderAABBScale = colliderAABBSize[1].subtract(colliderAABBSize[0]);
+//		Matrix4f colliderAABBScaleMatrix = new Matrix4f().initScale(colliderAABBScale.x, colliderAABBScale.y, 1);
+//		//world position
+//		Vector2f colliderAABBPosition = worldMatrix.transform(colliderPosition).add(colliderAABBMidpoint);
+//		Matrix4f colliderAABBPositionMatrix = new Matrix4f().initTranslation(colliderAABBPosition.x, colliderAABBPosition.y, 0);
+//
+//		Matrix4f colliderAABBMatrix = colliderAABBPositionMatrix.multiply(colliderAABBScaleMatrix);
+//		renderVBO(colliderAABBMatrix, debug2DPrimitiveRectangle.vbo, debug2DPrimitiveRectangle.ibo, debug2DPrimitiveRectangle.iboCount, new Vector3f(0.0f, 1.0f, 0.0f), GL_LINE_STRIP);
+//	}
+//	
 
 	@Override	
 	public void cleanUp()

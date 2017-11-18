@@ -7,7 +7,7 @@ import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 
 public class Collider2DShape
 {
-	public Debug2DPrimitive debug2DPrimitive;
+	//public Debug2DPrimitive debug2DPrimitive;
 	public int shapeKey = 1 << 0;
 	
 	public Vector2f[] getAABBSize (Matrix4f rotationMatrix)
@@ -33,7 +33,7 @@ public class Collider2DShape
 	@Override
 	public void finalize()
 	{
-		glDeleteBuffers(this.debug2DPrimitive.ibo);
-		glDeleteBuffers(this.debug2DPrimitive.vbo);
+//		glDeleteBuffers(this.debug2DPrimitive.ibo);
+//		glDeleteBuffers(this.debug2DPrimitive.vbo);
 	}
 }

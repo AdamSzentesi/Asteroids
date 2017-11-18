@@ -18,6 +18,7 @@ public class Physics2DMoveSubsystem extends Subsystem
 		for(int entityId : this.getList("primary"))
 		{
 			Rigidbody2DComponent rigidbody2DComponent = world.getComponent(entityId, Rigidbody2DComponent.class);
+			//System.out.print(entityId + "." + rigidbody2DComponent);
 			rigidbody2DComponent.lastVelocity.set(rigidbody2DComponent.velocity);
 			Transform2DComponent transform2DComponent = world.getComponent(entityId, Transform2DComponent.class);
 			transform2DComponent.lastTransform.set(transform2DComponent.transform);
@@ -59,6 +60,7 @@ public class Physics2DMoveSubsystem extends Subsystem
 				rigidbody2DComponent.acceleration.set(netAcceleration);
 			}
 		}
+
 	}
 	
 }

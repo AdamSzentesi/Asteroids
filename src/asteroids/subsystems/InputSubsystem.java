@@ -1,7 +1,5 @@
 package asteroids.subsystems;
 
-import asteroids.EntityManager;
-import asteroids.SubsystemMessenger;
 import asteroids.components.InputComponent;
 import asteroids.Message;
 import asteroids.World;

@@ -42,11 +42,6 @@ public class EntityManager
 		this.freeEntityId.add(entityId);
 	}
 	
-//	public int getNextEntityId()
-//	{
-//		return this.nextEntityId;
-//	}
-	
 	public long addEntityKey(int entityId, long entityKey)
 	{
 		this.entityKeys[entityId] |= entityKey;

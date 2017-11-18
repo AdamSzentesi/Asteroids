@@ -62,6 +62,10 @@ abstract public class Subsystem
 	//Iteration sequence
 	abstract public void process(World world, float delta);
 	
+	final ArrayList<Integer> getPrimaryList()
+	{
+		return this.iterableEntities.get(this.locksList.get("primary"));
+	}
 	
 	public final void updateEntityList(int entityId, long entityKey)
 	{
@@ -111,5 +115,17 @@ abstract public class Subsystem
 	}
 	
 	public void cleanUp(){}
+
+	public void removeFromEntityList(int entityId)
+	{
+		for(ArrayList<Integer> entities : this.iterableEntities.values())
+		{
+			if(entities.contains(entityId))
+			{
+				int position = entities.indexOf(entityId);
+				entities.remove(position);
+			}
+		}
+	}
 	
 }

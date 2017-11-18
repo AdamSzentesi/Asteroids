@@ -13,6 +13,8 @@ import asteroids.components.Geometry3D.PointLightComponent;
 import asteroids.components.Geometry3D.Render3DMesh.Material;
 import asteroids.components.Geometry3D.Transform3DComponent;
 import asteroids.math.Matrix3f;
+import java.nio.FloatBuffer;
+import org.lwjgl.BufferUtils;
 
 public class Shader
 {
@@ -154,4 +156,6 @@ public class Shader
 	{
 		glBindFragDataLocation(this.id, i, outColor);
 	}
+
+	
 }

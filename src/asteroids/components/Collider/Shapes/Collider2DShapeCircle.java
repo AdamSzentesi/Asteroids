@@ -16,7 +16,7 @@ public class Collider2DShapeCircle extends Collider2DShape
 	public Collider2DShapeCircle(float radius)
 	{
 		this.radius = radius;
-		this.debug2DPrimitive = new Debug2DPrimitiveCircle(1.0f);
+		//this.debug2DPrimitive = new Debug2DPrimitiveCircle(1.0f);
 		this.shapeKey = 1 << 1;
 	}
 	

@@ -72,6 +72,14 @@ public class Render2DLineComponent extends Component
 		iboCount = indexArray.length;
 	}
 	
+	public void set(int vbo, int vboCount, int ibo, int iboCount)
+	{
+		this.vbo = vbo;
+		this.ibo = ibo;
+		this.vboCount = vboCount;
+		this.iboCount = iboCount;
+	}
+	
 	public Render2DLineComponent(Vector2f a, Vector2f b)
 	{
 		//vertex data

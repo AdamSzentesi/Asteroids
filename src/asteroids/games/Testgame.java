@@ -7,7 +7,6 @@ import asteroids.components.Collider.*;
 import asteroids.components.Collider.Shapes.*;
 import asteroids.components.Geometry2D.*;
 import asteroids.components.Geometry3D.Transform3DComponent;
-import asteroids.math.Vector2f;
 import asteroids.subsystems.*;
 import static org.lwjgl.opengl.GL11.glClearColor;
 
@@ -18,7 +17,7 @@ public class Testgame extends Game
 	public Testgame(int width, int height)
 	{
 		super(width, height);
-		this.world = new World(1000);
+		this.world = new World(2000);
 	}
 
 	@Override
@@ -34,13 +33,11 @@ public class Testgame extends Game
 		long turnComponentKey = world.registerComponent(TurnComponent.class);
 		long asteroidComponentKey = world.registerComponent(AsteroidComponent.class);
 		long rotateComponentKey = world.registerComponent(RotateComponent.class);
-		
+
 		long transform2DComponentKey = world.registerComponent(Transform2DComponent.class);
 		long rigidbody2DComponentKey = world.registerComponent(Rigidbody2DComponent.class);
 		long collider2DComponentKey = world.registerComponent(Collider2DComponent.class);
 		long render2DLineComponentKey = world.registerComponent(Render2DLineComponent.class);
-		
-		long transform3DComponentKey = world.registerComponent(Transform3DComponent.class);
 		
 		long cameraComponentKey = world.registerComponent(CameraComponent.class);
 		System.out.println("...");
@@ -51,24 +48,27 @@ public class Testgame extends Game
 		world.addSubsystem(ThrustSubsystem.class, thrustComponentKey | transform2DComponentKey);
 		world.addSubsystem(ShootSubsystem.class, shootComponentKey | transform2DComponentKey);
 			world.getSubsystem(ShootSubsystem.class).addLock("rigidbodies", shootComponentKey | transform2DComponentKey | rigidbody2DComponentKey);
-//		world.addSubsystem(SimplePhysics2DSubsystem.class, transform2DComponentKey | rigidbody2DComponentKey);
-//			world.getSubsystem(SimplePhysics2DSubsystem.class).addLock("colliders", collider2DComponentKey | transform2DComponentKey);
 		world.addSubsystem(Physics2DMoveSubsystem.class, transform2DComponentKey | rigidbody2DComponentKey);
 		world.addSubsystem(Physics2DCollisionSubsystem.class, transform2DComponentKey | collider2DComponentKey);
 		world.addSubsystem(FieldSubsystem.class, transform2DComponentKey);
 		world.addSubsystem(Projectile2DSubsystem.class, transform2DComponentKey | projectile2DComponentKey);
 		world.addSubsystem(AsteroidSubsystem.class, asteroidComponentKey | transform2DComponentKey | collider2DComponentKey | rotateComponentKey);
+		world.addSubsystem(Update2DTransformSubsystem.class, transform2DComponentKey);
+		world.addSubsystem(Update2DCameraSubsystem.class, cameraComponentKey | transform2DComponentKey);
 		world.addSubsystem(Render2DSubsystem.class, render2DLineComponentKey | transform2DComponentKey);
 			world.getSubsystem(Render2DSubsystem.class).addLock("colliders", collider2DComponentKey | transform2DComponentKey);
+			world.getSubsystem(Render2DSubsystem.class).active = true;
 		System.out.println("...");
 		
 		//ENTITIES + COMPONENTS + VALUES
 		int camera = world.createEntity();
-		world.addComponent(camera, Transform3DComponent.class);
-			world.getComponent(camera, Transform3DComponent.class).transform.position.set(0.0f, 0.0f, 0.0f);
+		world.addComponent(camera, Transform2DComponent.class);
+			world.getComponent(camera, Transform2DComponent.class).transform.position.set(0.0f, 0.0f);
 		world.addComponent(camera, CameraComponent.class);
 			world.getComponent(camera, CameraComponent.class).projection.initPerspective(70f, (float)getWidth()/getHeight(), 0.001f, 10f);
-		
+		world.addComponent(camera, RotateComponent.class);
+			world.getComponent(camera, RotateComponent.class).rate = 0.0f;
+			
 		int player = this.world.createEntity();
 		world.addComponent(player, Transform2DComponent.class);
 			world.getComponent(player, Transform2DComponent.class).transform.position.set(0.0f, 0.0f);
@@ -110,13 +110,13 @@ public class Testgame extends Game
 			world.getComponent(player, InputComponent.class).commands.put("KEY_LEFT", "TURN_LEFT");
 			world.getComponent(player, InputComponent.class).commands.put("KEY_RIGHT", "TURN_RIGHT");
 		world.addComponent(player, ShootComponent.class);
-			world.getComponent(player, ShootComponent.class).reloadTime = 0.01f;
+			world.getComponent(player, ShootComponent.class).reloadTime = 0.1f;
 		world.addComponent(player, ThrustComponent.class);
 			world.getComponent(player, ThrustComponent.class).force = 10.0f;
 		world.addComponent(player, TurnComponent.class);
-			world.getComponent(player, TurnComponent.class).turnRate = 5.0f;
-
-
+			world.getComponent(player, TurnComponent.class).turnRate = 180.0f;
+			
+			
 		int field = world.createEntity();
 		world.addComponent(field, Transform2DComponent.class);
 		world.addComponent(field, Render2DLineComponent.class);
@@ -133,7 +133,10 @@ public class Testgame extends Game
 			);
 			world.getComponent(field, Render2DLineComponent.class).color.set(1.0f, 1.0f, 1.0f);
 		System.out.println("...");
-			
+		
+		//HIERARCHY
+		world.getComponent(camera, Transform2DComponent.class).setParent(world.getComponent(player, Transform2DComponent.class));
+		
 		//SUBSYSTEM ADDITIONS
 		world.getSubsystem(Render2DSubsystem.class).setActiveCamera(world, camera);
 		world.getSubsystem(Projectile2DSubsystem.class).setIgnored(player);

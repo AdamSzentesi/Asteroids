@@ -1,9 +1,7 @@
 package asteroids.subsystems;
 
-import asteroids.EntityManager;
 import asteroids.World;
 import asteroids.components.Geometry2D.Transform2DComponent;
-import asteroids.math.Vector2f;
 
 public class FieldSubsystem extends Subsystem
 {

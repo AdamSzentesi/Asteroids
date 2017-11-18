@@ -17,7 +17,7 @@ public class Collider2DShapeRectangle extends Collider2DShape
 	public Collider2DShapeRectangle(float x, float y)
 	{
 		this.size = new Vector2f(x, y);
-		this.debug2DPrimitive = new Debug2DPrimitiveRectangle();
+		//this.debug2DPrimitive = new Debug2DPrimitiveRectangle();
 		this.vertices = new Vector2f[]
 		{
 			new Vector2f(-x/2, y/2),

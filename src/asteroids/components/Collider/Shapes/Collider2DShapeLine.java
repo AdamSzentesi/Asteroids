@@ -14,7 +14,7 @@ public class Collider2DShapeLine extends Collider2DShape
 		this.startPoint = startPoint;
 		this.endPoint = endPoint;
 		
-		this.debug2DPrimitive = new Debug2DPrimitiveLine(startPoint, endPoint);
+		//this.debug2DPrimitive = new Debug2DPrimitiveLine(startPoint, endPoint);
 		this.shapeKey = 1 << 2;
 	}
 	

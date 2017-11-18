@@ -12,7 +12,7 @@ public class World
 	
 	private EntityManager entityManager;
 	private SubsystemManager subsystemManager;
-	private aComponentManager componentManager;
+	private AComponentManager componentManager;
 	
 	private ArrayList<Pair<Integer, Long>> entitiesToCreate = new ArrayList<>();
 	private ArrayList<Integer> entitiesToDestroy = new ArrayList<>();
@@ -141,7 +141,10 @@ public class World
 	 */
 	public void destroyEntity(int entityId)
 	{
-		this.entitiesToDestroy.add(entityId);
+		if(!this.entitiesToDestroy.contains(entityId))
+		{
+			this.entitiesToDestroy.add(entityId);
+		}
 	}
 	
 	/**
@@ -200,8 +203,8 @@ public class World
 		for(int entityId : this.entitiesToDestroy)
 		{
 			this.entityManager.destroyEntity(entityId);
-			this.componentManager.destroyComponentOnEntity(entityId);
-			this.subsystemManager.updateEntityList(entityId, 0);
+			this.componentManager.destroyComponentsOnEntity(entityId);
+			this.subsystemManager.removeFromEntityList(entityId);
 			this.subsystemManager.removeMessageBank(entityId);
 		}
 		this.entitiesToDestroy.clear();

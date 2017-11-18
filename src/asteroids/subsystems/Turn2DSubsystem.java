@@ -1,6 +1,5 @@
 package asteroids.subsystems;
 
-import asteroids.EntityManager;
 import asteroids.components.TurnComponent;
 import asteroids.Message;
 import asteroids.World;
@@ -28,10 +27,10 @@ public class Turn2DSubsystem extends Subsystem
 				switch (message.parameter)
 				{
 					case "TURN_LEFT":
-						transform2DComponent.transform.rotation += turnComponent.turnRate;
+						transform2DComponent.transform.rotation += turnComponent.turnRate * delta;
 						break;
 					case "TURN_RIGHT":
-						transform2DComponent.transform.rotation -= turnComponent.turnRate;
+						transform2DComponent.transform.rotation -= turnComponent.turnRate * delta;
 						break;
 				}
 				

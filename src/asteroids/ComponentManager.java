@@ -1,84 +1,89 @@
 package asteroids;
 
 import asteroids.components.Component;
+import java.lang.reflect.Array;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ComponentManager extends aComponentManager
+public class ComponentManager extends AComponentManager
 {
 	private int MAX_COMPONENTS;
-	private String[] componentTypes;//remove!!!
-	private Class<? extends Component>[] componentStore;
+	private int MAX_ENTITIES;
 	private int nextComponentTypeId;
-	private int nextComponentDataId;
-	private Component[] componentData;
-	private long[] componentTypeKeys;
-	private int[][] entityComponentRelations;
+	
+	private Map<Long, Component[]> components;
+	private Map<Long, Class<? extends Component>> componentsStore;
+	private Map<String, Long> componentsKeys;
 	
 	public ComponentManager(int MAX_COMPONENTS, int MAX_ENTITIES)
 	{
 		this.MAX_COMPONENTS = MAX_COMPONENTS;
-		this.componentTypes = new String[MAX_COMPONENTS];//remove!!!
-		this.componentStore = new Class[MAX_COMPONENTS];
+		this.MAX_ENTITIES = MAX_ENTITIES;
 		this.nextComponentTypeId = 0;
-		this.nextComponentDataId = 1;
-		this.componentData = new Component[MAX_ENTITIES * MAX_COMPONENTS];
-		this.componentTypeKeys = new long[MAX_COMPONENTS];
-		this.entityComponentRelations = new int[MAX_ENTITIES][MAX_COMPONENTS];
+		
+		this.components = new HashMap<>();
+		this.componentsStore = new HashMap<>();
+		this.componentsKeys = new HashMap<>();
 	}
 	
 	@Override
 	public long registerComponent(Class componentClass)
 	{
-		long result = 0;
-		String componentName = componentClass.getSimpleName();
-		if(!isInArray(componentName, this.componentTypes))
+		Long result = this.componentsKeys.get(componentClass.getSimpleName());
+		
+		if(result == null)
 		{
-			this.componentTypes[this.nextComponentTypeId] = componentName;
-			this.componentStore[this.nextComponentTypeId] = componentClass;
-			this.componentTypeKeys[this.nextComponentTypeId] = 1 << this.nextComponentTypeId;
-			result = this.componentTypeKeys[this.nextComponentTypeId];
-			System.out.println("EntityManager registering " + componentName + " with Id " + this.nextComponentTypeId + " and binary Key " + result);
+			result = (long)1 << this.nextComponentTypeId;
+			this.componentsKeys.put(componentClass.getSimpleName(), result);
+			this.componentsStore.put(result, componentClass);
+			this.components.put(result, (Component[])Array.newInstance(componentClass, this.MAX_ENTITIES));
+			System.out.println("EntityManager registering " + componentClass.getSimpleName() + " with Id " + this.nextComponentTypeId + " and binary Key " + result);
 			this.nextComponentTypeId++;
 		}
 		else
 		{
-			int componentId = getComponentId(componentClass);
-			System.out.println("ComponentType " + componentName + " already registered as Id " + componentId);
-			result = this.getComponentKey(componentId);
+			System.out.println("ComponentType " + componentClass.getSimpleName() + " already registered as Id " + result);
 		}
+		
 		return result;
 	}
 	
 	@Override
 	public long addComponent(int entityId, Class componentClass)
 	{
-		int componentTypeId = getComponentId(componentClass);
-		//System.out.println(" EntityManager: adding component " + getComponentType(componentTypeId) + " of component type id " + componentTypeId);
+//		System.out.println(" adding " + componentClass.getSimpleName() + " to entity " + entityId);
+		long result = getComponentKey(componentClass);
+//		System.out.println(" key " + result);
+		addComponent(entityId, result);
+		return result;
+	}
+	
+	public long addComponent(int entityId, long componentKey)
+	{
 		try
 		{
-			this.componentData[this.nextComponentDataId] = componentStore[componentTypeId].newInstance();
+			this.components.get(componentKey)[entityId] = componentsStore.get(componentKey).newInstance();
 		}
-		catch (InstantiationException ex){Logger.getLogger(EntityManager.class.getName()).log(Level.SEVERE, null, ex);}
-		catch (IllegalAccessException ex){Logger.getLogger(EntityManager.class.getName()).log(Level.SEVERE, null, ex);}
-		this.entityComponentRelations[entityId][componentTypeId] = this.nextComponentDataId;
-		this.nextComponentDataId++;
-		return getComponentKey(componentTypeId);
+		catch (InstantiationException ex) {Logger.getLogger(ComponentManager.class.getName()).log(Level.SEVERE, null, ex);}
+		catch (IllegalAccessException ex) {Logger.getLogger(ComponentManager.class.getName()).log(Level.SEVERE, null, ex);}
+		return componentKey;
 	}
 	
 	@Override
-	public <T extends Component> T getComponent(int entityId, Class<T> c)
+	public <T extends Component> T getComponent(int entityId, Class<T> componentClass)
 	{
-		int componentId = this.entityComponentRelations[entityId][getComponentId(c)];
-		return c.cast(this.componentData[componentId]);
+		long componentKey = getComponentKey(componentClass);
+		return componentClass.cast(this.components.get(componentKey)[entityId]);
 	}
-	
+
 	@Override
-	public void destroyComponentOnEntity(int entityId)
+	public void destroyComponentsOnEntity(int entityId)
 	{
-		for(int componentId : this.entityComponentRelations[entityId])
+		for(Component[] component : this.components.values())
 		{
-			this.componentData[componentId] = null;
+			component[entityId] = null;
 		}
 	}
 	
@@ -94,40 +99,13 @@ public class ComponentManager extends aComponentManager
 		}
 		return result;
 	}
-	
-	@Override
-	public int getComponentId(Class componentClass)
-	{
-		int result = 0;
-		for(int i = 0; i < this.componentTypes.length; i++)
-		{
-			if(componentClass.getSimpleName().equals(this.componentTypes[i]))
-			{
-				result = i;
-			}
-		}
-		return result;
-	}
-	
-	private long getComponentKey(int id)
-	{
-		long result = this.componentTypeKeys[id];
-		return result;
-	}
+
 	
 	@Override
 	public long getComponentKey(Class componentClass)
 	{
-		int componentTypeId = getComponentId(componentClass);
-		long result = this.componentTypeKeys[componentTypeId];
+		long result = this.componentsKeys.get(componentClass.getSimpleName());
 		return result;
 	}
-	
-	@Override
-	public String getComponentType(int id)
-	{
-		String result = this.componentTypes[id];
-		return result;
-	}
-	
+
 }

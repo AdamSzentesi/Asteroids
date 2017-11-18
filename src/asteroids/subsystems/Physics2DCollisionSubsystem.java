@@ -10,14 +10,7 @@ import asteroids.components.Geometry2D.Transform2DComponent;
 import asteroids.geometry.GeometryUtils;
 import asteroids.math.Grid;
 import asteroids.math.Vector2f;
-import asteroids.subsystems.physics2D.CollisionData;
-import asteroids.subsystems.physics2D.CollisionTestCircleCircle;
-import asteroids.subsystems.physics2D.CollisionTestCircleLine;
-import asteroids.subsystems.physics2D.CollisionTestCircleMultiline;
-import asteroids.subsystems.physics2D.CollisionTestLineLine;
-import asteroids.subsystems.physics2D.CollisionTestLineMultiline;
-import asteroids.subsystems.physics2D.CollisionTestPointCircle;
-import asteroids.subsystems.physics2D.Physics2DAABB;
+import asteroids.subsystems.physics2D.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -95,8 +88,6 @@ public class Physics2DCollisionSubsystem extends Subsystem
 					
 					if(ignore == false)
 					{
-						System.out.println("keys: ");
-						
 						Transform2DComponent transform2DComponentB = world.getComponent(entityIdB, Transform2DComponent.class);
 						Collider2DComponent collider2DComponentB = world.getComponent(entityIdB, Collider2DComponent.class);				
 						Vector2f positionB = transform2DComponentB.transform.getMatrix().transform(collider2DComponentB.position);
