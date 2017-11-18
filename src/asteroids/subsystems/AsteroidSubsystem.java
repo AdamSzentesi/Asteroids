@@ -87,8 +87,8 @@ public class AsteroidSubsystem extends Subsystem
 				switch (message.parameter)
 				{
 					case "HIT":
+					{
 						//System.out.println("HIT by: " + world.getEntityKey((int)message.value));
-						
 						if(world.hasEntityComponent((int)message.value, Projectile2DComponent.class))
 						{
 							AsteroidComponent asteroidComponent = world.getComponent(entityId, AsteroidComponent.class);
@@ -109,7 +109,13 @@ public class AsteroidSubsystem extends Subsystem
 								world.destroyEntity(entityId);
 							}
 						}
-						break;	
+						break;
+					}
+					case "DISPERSE":
+					{
+						disperse();
+						break;
+					}
 				}
 			}
 		}
@@ -141,6 +147,14 @@ public class AsteroidSubsystem extends Subsystem
 			world.getComponent(entityId, AsteroidComponent.class).level = level;
 		world.addComponent(entityId, RotateComponent.class);
 			world.getComponent(entityId, RotateComponent.class).rate = this.random.nextFloat() * 10 - 5;
+	}
+	
+	private void disperse()
+	{
+		for(int entityId : getPrimaryList())
+		{
+			
+		}
 	}
 	
 	private Vector2f getRandomVector()

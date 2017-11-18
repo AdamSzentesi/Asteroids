@@ -27,12 +27,13 @@ public class Testgame extends Game
 		//COMPONENTS + KEYS
 		long inputComponentKey = world.registerComponent(InputComponent.class);
 		long shootComponentKey = world.registerComponent(ShootComponent.class);
-		long projectile2DComponentKey = world.registerComponent(Projectile2DComponent.class);
+		long healthComponentKey = world.registerComponent(HealthComponent.class);
 		long thrustComponentKey = world.registerComponent(ThrustComponent.class);
 		long turnComponentKey = world.registerComponent(TurnComponent.class);
 		long asteroidComponentKey = world.registerComponent(AsteroidComponent.class);
 		long rotateComponentKey = world.registerComponent(RotateComponent.class);
-
+		
+		long projectile2DComponentKey = world.registerComponent(Projectile2DComponent.class);
 		long transform2DComponentKey = world.registerComponent(Transform2DComponent.class);
 		long rigidbody2DComponentKey = world.registerComponent(Rigidbody2DComponent.class);
 		long collider2DComponentKey = world.registerComponent(Collider2DComponent.class);
@@ -51,9 +52,9 @@ public class Testgame extends Game
 		world.addSubsystem(Physics2DCollisionSubsystem.class, transform2DComponentKey | collider2DComponentKey);
 		world.addSubsystem(FieldSubsystem.class, transform2DComponentKey);
 		world.addSubsystem(Projectile2DSubsystem.class, transform2DComponentKey | projectile2DComponentKey);
+		world.addSubsystem(HealthSubsystem.class, healthComponentKey);
 		world.addSubsystem(AsteroidSubsystem.class, asteroidComponentKey | transform2DComponentKey | collider2DComponentKey | rotateComponentKey);
 		world.addSubsystem(Rotate2DSubsystem.class, transform2DComponentKey | rotateComponentKey);
-		world.addSubsystem(Update2DTransformSubsystem.class, transform2DComponentKey);
 		world.addSubsystem(Update2DCameraSubsystem.class, cameraComponentKey | transform2DComponentKey);
 		world.addSubsystem(Render2DSubsystem.class, render2DLineComponentKey | transform2DComponentKey);
 			world.getSubsystem(Render2DSubsystem.class).addLock("colliders", collider2DComponentKey | transform2DComponentKey);
@@ -115,6 +116,8 @@ public class Testgame extends Game
 			world.getComponent(player, ThrustComponent.class).force = 10.0f;
 		world.addComponent(player, TurnComponent.class);
 			world.getComponent(player, TurnComponent.class).turnRate = 180.0f;
+		world.addComponent(player, HealthComponent.class);
+			world.getComponent(player, HealthComponent.class).health = 100;
 			
 		int pivot = this.world.createEntity();
 		world.addComponent(pivot, Transform2DComponent.class);
@@ -152,7 +155,7 @@ public class Testgame extends Game
 		//HIERARCHY
 		world.getComponent(pivot, Transform2DComponent.class).setParent(world.getComponent(player, Transform2DComponent.class));
 		world.getComponent(orbit, Transform2DComponent.class).setParent(world.getComponent(pivot, Transform2DComponent.class));
-		world.getComponent(orbit, Transform2DComponent.class).inheritRotation = false;
+		//world.getComponent(orbit, Transform2DComponent.class).inheritRotation = false;
 		//world.getComponent(camera, Transform2DComponent.class).setParent(world.getComponent(player, Transform2DComponent.class));
 		
 		
