@@ -6,7 +6,6 @@ import asteroids.components.*;
 import asteroids.components.Collider.*;
 import asteroids.components.Collider.Shapes.*;
 import asteroids.components.Geometry2D.*;
-import asteroids.components.Geometry3D.Transform3DComponent;
 import asteroids.subsystems.*;
 import static org.lwjgl.opengl.GL11.glClearColor;
 
@@ -53,6 +52,7 @@ public class Testgame extends Game
 		world.addSubsystem(FieldSubsystem.class, transform2DComponentKey);
 		world.addSubsystem(Projectile2DSubsystem.class, transform2DComponentKey | projectile2DComponentKey);
 		world.addSubsystem(AsteroidSubsystem.class, asteroidComponentKey | transform2DComponentKey | collider2DComponentKey | rotateComponentKey);
+		world.addSubsystem(Rotate2DSubsystem.class, transform2DComponentKey | rotateComponentKey);
 		world.addSubsystem(Update2DTransformSubsystem.class, transform2DComponentKey);
 		world.addSubsystem(Update2DCameraSubsystem.class, cameraComponentKey | transform2DComponentKey);
 		world.addSubsystem(Render2DSubsystem.class, render2DLineComponentKey | transform2DComponentKey);
@@ -116,6 +116,21 @@ public class Testgame extends Game
 		world.addComponent(player, TurnComponent.class);
 			world.getComponent(player, TurnComponent.class).turnRate = 180.0f;
 			
+		int pivot = this.world.createEntity();
+		world.addComponent(pivot, Transform2DComponent.class);
+			world.getComponent(pivot, Transform2DComponent.class).transform.position.set(0.0f, 0.0f);
+		world.addComponent(pivot, RotateComponent.class);
+			world.getComponent(pivot, RotateComponent.class).rate = 200.0f;
+			
+		int orbit = this.world.createEntity();
+		world.addComponent(orbit, Transform2DComponent.class);
+			world.getComponent(orbit, Transform2DComponent.class).transform.position.set(0.2f, 0.0f);
+			world.getComponent(orbit, Transform2DComponent.class).transform.scale.set(0.5f, 0.5f);
+		world.addComponent(orbit, Render2DLineComponent.class);
+			world.getComponent(orbit, Render2DLineComponent.class).color.set(0.0f, 1.0f, 0.0f);
+//		world.addComponent(orbit, RotateComponent.class);
+//			world.getComponent(orbit, RotateComponent.class).rate = 5.0f;
+
 			
 		int field = world.createEntity();
 		world.addComponent(field, Transform2DComponent.class);
@@ -135,7 +150,11 @@ public class Testgame extends Game
 		System.out.println("...");
 		
 		//HIERARCHY
-		world.getComponent(camera, Transform2DComponent.class).setParent(world.getComponent(player, Transform2DComponent.class));
+		world.getComponent(pivot, Transform2DComponent.class).setParent(world.getComponent(player, Transform2DComponent.class));
+		world.getComponent(orbit, Transform2DComponent.class).setParent(world.getComponent(pivot, Transform2DComponent.class));
+		world.getComponent(orbit, Transform2DComponent.class).inheritRotation = false;
+		//world.getComponent(camera, Transform2DComponent.class).setParent(world.getComponent(player, Transform2DComponent.class));
+		
 		
 		//SUBSYSTEM ADDITIONS
 		world.getSubsystem(Render2DSubsystem.class).setActiveCamera(world, camera);

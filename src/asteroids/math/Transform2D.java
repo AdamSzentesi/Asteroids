@@ -40,13 +40,12 @@ public class Transform2D
 		
 		return position.multiply(rotation.multiply(scale));
 	}
-	
-	public Matrix4f getMatrixPR()
+	public Matrix4f getReverseMatrix()
 	{
-		Matrix4f position = new Matrix4f().initTranslation(this.position.x, this.position.y, 0);
-		Matrix4f rotation = new Matrix4f().initRotation(0, 0, this.rotation);
-		
-		return position.multiply(rotation);
+		Vector2f inversePosition = this.position.multiply(-1);
+		Matrix4f position = new Matrix4f().initTranslation(inversePosition.x, inversePosition.y, 0);
+		Matrix4f rotation = new Matrix4f().initRotation(0, 0, -this.rotation);
+		return rotation.multiply(position);
 	}
 	
 	public void setScale(float x, float y)
