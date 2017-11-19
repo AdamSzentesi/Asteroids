@@ -123,7 +123,7 @@ public class AsteroidSubsystem extends Subsystem
 		if(this.timer <= 0)
 		{
 			summon(world, new Vector2f(-1.0f, -1.0f), (byte)3);
-			this.timer = 0.10f;
+			this.timer = 5.0f;
 		}
 		this.timer -= delta;
 	}

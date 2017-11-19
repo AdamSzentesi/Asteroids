@@ -87,16 +87,13 @@ public class CoreEngine
 					frameCounter = 0;
 				}
 				updateDelta = Time.getTime() - updateStart;
-//				System.out.println("update delta " + (updateDelta / 1000000));
 			}
 			
 			if(canRender)
 			{
-//				long updateStart = Time.getTime();
 				this.game.render();
 				Window.render();
 				frames++;
-//				System.out.println("render delta " + (Time.getTime() - updateStart) / 1000000);
 			}
 			else
 			{

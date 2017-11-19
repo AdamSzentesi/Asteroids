@@ -114,7 +114,8 @@ public class Render2DSubsystem extends Subsystem
 		finalOutput = this.effectManager.getEffect("combine", CombineEffect.class).apply(this.singlesampleFramebuffer.getTexture(0), 1f, finalOutput, 3f);
 		glViewport(0, 0, Display.getWidth(), Display.getHeight());
 		this.effectManager.getEffect("draw", DrawEffect.class).apply(finalOutput);
-
+		
+		//try to free buffers from heap
 		System.gc();
 	}
 	

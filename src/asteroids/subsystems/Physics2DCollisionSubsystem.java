@@ -43,9 +43,12 @@ public class Physics2DCollisionSubsystem extends Subsystem
 		this.grid.clear();
 		for(int entityId : this.getList("primary"))
 		{
-			Physics2DAABB aabb = world.getComponent(entityId, Collider2DComponent.class).aabb;
-			Vector2f position = world.getComponent(entityId, Transform2DComponent.class).transform.position;
-			Physics2DAABB box = new Physics2DAABB(aabb.min.add(position), aabb.max.add(position));
+			Physics2DAABB colliderAABB = world.getComponent(entityId, Collider2DComponent.class).aabb;
+			Vector2f secondPosition = world.getComponent(entityId, Transform2DComponent.class).transform.position;
+			Vector2f firstPosition = world.getComponent(entityId, Transform2DComponent.class).lastTransform.position;
+			Physics2DAABB box = getMotionAABB(colliderAABB, firstPosition, secondPosition);
+//			Physics2DAABB box = new Physics2DAABB(colliderAABB.min.add(secondPosition), colliderAABB.max.add(secondPosition));
+			
 			grid.insert(box, entityId);
 		}
 		
@@ -70,7 +73,7 @@ public class Physics2DCollisionSubsystem extends Subsystem
 				Collider2DComponent collider2DComponentA = world.getComponent(entityIdA, Collider2DComponent.class);
 				Vector2f positionA = transform2DComponentA.transform.getMatrix().transform(collider2DComponentA.position);
 				Vector2f lastPositionA = transform2DComponentA.lastTransform.getMatrix().transform(collider2DComponentA.position);
-
+				
 				//iterate through comparing colliders
 				for(int b = a + 1; b < colliders.size(); b++)
 				{
@@ -187,5 +190,31 @@ public class Physics2DCollisionSubsystem extends Subsystem
 	{
 		this.collisionIgnoreList.add(key);
 		System.out.println(this.getClass().getSimpleName() + ": added ignored collision between objects with: " + key);
+	}
+	
+	/**
+	 * Returns an AABB of a collider expanded with movement vector
+	 * TODO: optimize for "if not moving" case
+	 * 
+	 * @param  colliderAABB
+	 * @param  firstPosition
+	 * @param  secondPosition
+	 * @return 
+	 */
+	private Physics2DAABB getMotionAABB(Physics2DAABB colliderAABB, Vector2f firstPosition, Vector2f secondPosition)
+	{
+		float minX = Math.min(firstPosition.x, secondPosition.x);
+		float minY = Math.min(firstPosition.y, secondPosition.y);
+		float maxX = Math.max(firstPosition.x, secondPosition.x);
+		float maxY = Math.max(firstPosition.y, secondPosition.y);
+		
+		Vector2f min = new Vector2f(minX, minY).add(colliderAABB.min);
+		Vector2f max = new Vector2f(maxX, maxY).add(colliderAABB.max);
+		
+		System.out.println("min " + colliderAABB.min.x + "," + colliderAABB.min.y + " max" + colliderAABB.max.x + "," + colliderAABB.max.y);
+//		System.out.println("min " + minX + "," + minY + " max" + maxX + "," + maxY);
+//		System.out.println("fin " + min.x + "," + min.y + "    " + max.x + "," + max.y);
+		
+		return new Physics2DAABB(firstPosition, firstPosition);
 	}
 }
