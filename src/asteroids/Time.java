@@ -7,8 +7,12 @@ public class Time
 	
 	public static double getTime()
 	{
-		return (double)System.nanoTime()/(double)SECOND;
+		return System.nanoTime();
 		
 	}
 	
+	public static double getMicroTime()
+	{
+		return (double)System.nanoTime()/(double)SECOND;
+	}
 }

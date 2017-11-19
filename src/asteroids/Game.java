@@ -23,5 +23,6 @@ abstract public class Game
 	
 	abstract public void initialize();
 	abstract public void update(float delta);
+	abstract public void render();
 	abstract public void cleanUp();
 }

@@ -66,7 +66,7 @@ public class Testgame extends Game
 		world.addComponent(camera, Transform2DComponent.class);
 			world.getComponent(camera, Transform2DComponent.class).transform.position.set(0.0f, 0.0f);
 		world.addComponent(camera, CameraComponent.class);
-			world.getComponent(camera, CameraComponent.class).projection.initPerspective(70f, (float)getWidth()/getHeight(), 0.001f, 10f);
+			world.getComponent(camera, CameraComponent.class).projection.initPerspective(30f, (float)getWidth()/getHeight(), 0.001f, 10f);
 		world.addComponent(camera, RotateComponent.class);
 			world.getComponent(camera, RotateComponent.class).rate = 0.0f;
 			
@@ -156,7 +156,7 @@ public class Testgame extends Game
 		world.getComponent(pivot, Transform2DComponent.class).setParent(world.getComponent(player, Transform2DComponent.class));
 		world.getComponent(orbit, Transform2DComponent.class).setParent(world.getComponent(pivot, Transform2DComponent.class));
 		//world.getComponent(orbit, Transform2DComponent.class).inheritRotation = false;
-		//world.getComponent(camera, Transform2DComponent.class).setParent(world.getComponent(player, Transform2DComponent.class));
+//		world.getComponent(camera, Transform2DComponent.class).setParent(world.getComponent(orbit, Transform2DComponent.class));
 		
 		
 		//SUBSYSTEM ADDITIONS
@@ -172,7 +172,13 @@ public class Testgame extends Game
 	{
 		this.world.update(delta);
 	}
-
+	
+	@Override
+	public void render()
+	{
+//		System.out.println("render");
+	}
+	
 	@Override
 	public void cleanUp()
 	{
