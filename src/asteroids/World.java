@@ -26,7 +26,7 @@ public class World
 	}
 	
 	/**
-	 * Main world cycle
+	 * Main world update cycle
 	 * 
 	 * @param delta delta time
 	 */
@@ -34,6 +34,18 @@ public class World
 	{
 		this.createEntities();
 		this.subsystemManager.process(this, delta);
+		this.destroyEntities();
+	}
+	
+	/**
+	 * Main world render cycle
+	 * 
+	 * @param delta delta time
+	 */
+	public void render(float delta)
+	{
+		this.createEntities();
+		this.subsystemManager.render(this, delta);
 		this.destroyEntities();
 	}
 	
@@ -108,6 +120,10 @@ public class World
 	{
 		this.subsystemManager.addSubsystem(subsystemClass, componentKey);
 	}
+	public void addRenderSubsystem(Class subsystemClass, long componentKey)
+	{
+		this.subsystemManager.addRenderSubsystem(subsystemClass, componentKey);
+	}
 	
 	/**
 	 * Retrieves a registered subsystem of a given subsystem class
@@ -119,6 +135,10 @@ public class World
 	public <T extends Subsystem> T getSubsystem(Class<T> subsystemClass)
 	{
 		return this.subsystemManager.getSubsystem(subsystemClass);
+	}
+	public <T extends Subsystem> T getRenderSubsystem(Class<T> subsystemClass)
+	{
+		return this.subsystemManager.getRenderSubsystem(subsystemClass);
 	}
 	
 //ENTITIES

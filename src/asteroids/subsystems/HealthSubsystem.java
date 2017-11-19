@@ -29,7 +29,7 @@ public class HealthSubsystem extends Subsystem
 							HealthComponent healthComponent = world.getComponent(entityId, HealthComponent.class);
 							healthComponent.health--;
 							this.sendMessage(new Message(entityId, "DISPERSE", null));
-							System.out.println("health: " + healthComponent.health);
+//							System.out.println("health: " + healthComponent.health);
 						}
 						break;
 					}

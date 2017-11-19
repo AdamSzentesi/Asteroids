@@ -9,6 +9,7 @@ import asteroids.subsystems.Subsystem;
 public class SubsystemManager
 {
 	private LinkedHashMap<String, Subsystem> subsystems = new LinkedHashMap<>();
+	private LinkedHashMap<String, Subsystem> renderSubsystems = new LinkedHashMap<>();
 	private HashMap<String, Class<? extends Subsystem>> subsystemStore = new HashMap<>();
 	private SubsystemMessenger subsystemMessenger = new SubsystemMessenger();
 	
@@ -24,13 +25,29 @@ public class SubsystemManager
 				subsystem.upate(world, delta);
 			}
 		}
-		
+	}
+	
+	public void render(World world, float delta)
+	{
+		//make another messenger?
+		//this.subsystemMessenger.clearMessages();
+		for (Subsystem subsystem : this.renderSubsystems.values())
+		{
+			if(subsystem.active)
+			{
+				subsystem.upate(world, delta);
+			}
+		}
 	}
 	
 	//NEW
 	public void updateEntityList(int entityId, long entityKey)
 	{
 		for (Subsystem subsystem : this.subsystems.values())
+		{
+			subsystem.updateEntityList(entityId, entityKey);
+		}
+		for (Subsystem subsystem : this.renderSubsystems.values())
 		{
 			subsystem.updateEntityList(entityId, entityKey);
 		}
@@ -52,9 +69,30 @@ public class SubsystemManager
 		catch (IllegalAccessException ex){Logger.getLogger(SubsystemManager.class.getName()).log(Level.SEVERE, null, ex);}
 	}
 	
+	public void addRenderSubsystem(Class subsystemClass, long componentKey)
+	{
+		System.out.print("SubsystemManager: adding " + subsystemClass.getSimpleName() + " subsystem");
+		try
+		{
+			register(subsystemClass);
+			this.renderSubsystems.put(subsystemClass.getSimpleName(),	this.subsystemStore.get(subsystemClass.getSimpleName()).newInstance());
+			
+			Subsystem subsystem = this.renderSubsystems.get(subsystemClass.getSimpleName());
+			subsystem.setPrimaryLock(componentKey);
+			subsystem.setMessenger(this.subsystemMessenger);
+		}
+		catch (InstantiationException ex){Logger.getLogger(SubsystemManager.class.getName()).log(Level.SEVERE, null, ex);}
+		catch (IllegalAccessException ex){Logger.getLogger(SubsystemManager.class.getName()).log(Level.SEVERE, null, ex);}
+	}
+	
 	public <T extends Subsystem> T getSubsystem(Class<T> subsystemClass)
 	{
 		return subsystemClass.cast(this.subsystems.get(subsystemClass.getSimpleName()));
+	}
+	
+	public <T extends Subsystem> T getRenderSubsystem(Class<T> subsystemClass)
+	{
+		return subsystemClass.cast(this.renderSubsystems.get(subsystemClass.getSimpleName()));
 	}
 	
 	public void addMessageBank(int entityId)
@@ -90,12 +128,20 @@ public class SubsystemManager
 		for (Subsystem subsystem : this.subsystems.values())
 		{
 			subsystem.cleanUp();
-		}	
+		}
+		for (Subsystem subsystem : this.renderSubsystems.values())
+		{
+			subsystem.cleanUp();
+		}
 	}
 
 	public void removeFromEntityList(int entityId)
 	{
 		for (Subsystem subsystem : this.subsystems.values())
+		{
+			subsystem.removeFromEntityList(entityId);
+		}
+		for (Subsystem subsystem : this.renderSubsystems.values())
 		{
 			subsystem.removeFromEntityList(entityId);
 		}

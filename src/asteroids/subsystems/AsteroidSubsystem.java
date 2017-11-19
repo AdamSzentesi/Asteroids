@@ -76,7 +76,7 @@ public class AsteroidSubsystem extends Subsystem
 		for(int entityId : this.getList("primary"))
 		{
 			Transform2DComponent transform2DComponent = world.getComponent(entityId, Transform2DComponent.class);
-			transform2DComponent.transform.rotation += world.getComponent(entityId, RotateComponent.class).rate;
+			transform2DComponent.transform.rotation += world.getComponent(entityId, RotateComponent.class).rate * delta;
 			
 			List<Message> messages = getMessages(entityId);
 			int messageCount = messages.size();
@@ -123,7 +123,7 @@ public class AsteroidSubsystem extends Subsystem
 		if(this.timer <= 0)
 		{
 			summon(world, new Vector2f(-1.0f, -1.0f), (byte)3);
-			this.timer = 10.0f;
+			this.timer = 0.10f;
 		}
 		this.timer -= delta;
 	}
@@ -146,7 +146,7 @@ public class AsteroidSubsystem extends Subsystem
 		world.addComponent(entityId, AsteroidComponent.class);
 			world.getComponent(entityId, AsteroidComponent.class).level = level;
 		world.addComponent(entityId, RotateComponent.class);
-			world.getComponent(entityId, RotateComponent.class).rate = this.random.nextFloat() * 10 - 5;
+			world.getComponent(entityId, RotateComponent.class).rate = this.random.nextFloat() * 50 - 25;
 	}
 	
 	private void disperse()

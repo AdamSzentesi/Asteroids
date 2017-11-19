@@ -56,9 +56,9 @@ public class Testgame extends Game
 		world.addSubsystem(AsteroidSubsystem.class, asteroidComponentKey | transform2DComponentKey | collider2DComponentKey | rotateComponentKey);
 		world.addSubsystem(Rotate2DSubsystem.class, transform2DComponentKey | rotateComponentKey);
 		world.addSubsystem(Update2DCameraSubsystem.class, cameraComponentKey | transform2DComponentKey);
-		world.addSubsystem(Render2DSubsystem.class, render2DLineComponentKey | transform2DComponentKey);
-			world.getSubsystem(Render2DSubsystem.class).addLock("colliders", collider2DComponentKey | transform2DComponentKey);
-			world.getSubsystem(Render2DSubsystem.class).active = true;
+		world.addRenderSubsystem(Render2DSubsystem.class, render2DLineComponentKey | transform2DComponentKey);
+			world.getRenderSubsystem(Render2DSubsystem.class).addLock("colliders", collider2DComponentKey | transform2DComponentKey);
+			world.getRenderSubsystem(Render2DSubsystem.class).active = true;
 		System.out.println("...");
 		
 		//ENTITIES + COMPONENTS + VALUES
@@ -66,7 +66,7 @@ public class Testgame extends Game
 		world.addComponent(camera, Transform2DComponent.class);
 			world.getComponent(camera, Transform2DComponent.class).transform.position.set(0.0f, 0.0f);
 		world.addComponent(camera, CameraComponent.class);
-			world.getComponent(camera, CameraComponent.class).projection.initPerspective(30f, (float)getWidth()/getHeight(), 0.001f, 10f);
+			world.getComponent(camera, CameraComponent.class).projection.initPerspective(70f, (float)getWidth()/getHeight(), 0.001f, 10f);
 		world.addComponent(camera, RotateComponent.class);
 			world.getComponent(camera, RotateComponent.class).rate = 0.0f;
 			
@@ -160,7 +160,7 @@ public class Testgame extends Game
 		
 		
 		//SUBSYSTEM ADDITIONS
-		world.getSubsystem(Render2DSubsystem.class).setActiveCamera(world, camera);
+		world.getRenderSubsystem(Render2DSubsystem.class).setActiveCamera(world, camera);
 		world.getSubsystem(Projectile2DSubsystem.class).setIgnored(player);
 		world.getSubsystem(Physics2DCollisionSubsystem.class).addIgnoreKey(asteroidComponentKey);
 		world.getSubsystem(Physics2DCollisionSubsystem.class).addIgnoreKey(projectile2DComponentKey);
@@ -176,7 +176,7 @@ public class Testgame extends Game
 	@Override
 	public void render()
 	{
-//		System.out.println("render");
+		this.world.render(0);
 	}
 	
 	@Override
