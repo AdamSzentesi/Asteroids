@@ -42,34 +42,20 @@ public class Text extends Game
 		world.addComponent(camera, CameraComponent.class);
 			world.getComponent(camera, CameraComponent.class).projection.initPerspective(70f, (float)getWidth()/getHeight(), 0.001f, 10f);
 			
-		int player = this.world.createEntity();
-		world.addComponent(player, Transform2DComponent.class);
-			world.getComponent(player, Transform2DComponent.class).transform.position.set(0.0f, 0.0f);
-		world.addComponent(player, Render2DTextComponent.class);
-			world.getComponent(player, Render2DTextComponent.class).loadLine
-			(
-				new float[]
-				{
-					0.00f, 0.10f,
-					0.03f, 0.02f,
-					0.08f, -0.04f,
-					0.08f, -0.05f,
-					0.03f, -0.08f,
-					0.03f, -0.09f,
-					0.01f, -0.08f,
-					-0.01f, -0.08f,
-					-0.03f, -0.09f,
-					-0.03f, -0.08f,
-					-0.08f, -0.05f,
-					-0.08f, -0.04f,
-					-0.03f, 0.02f,
-				},
-				new int[]
-				{
-					0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 0	
-				}
-			);
-			world.getComponent(player, Render2DTextComponent.class).color.set(0.0f, 1.0f, 1.0f);
+		int string = this.world.createEntity();
+		world.addComponent(string, Transform2DComponent.class);
+			world.getComponent(string, Transform2DComponent.class).transform.position.set(0.0f, 0.0f);
+		world.addComponent(string, Render2DTextComponent.class);
+			world.getComponent(string, Render2DTextComponent.class).string = "Ahoj";
+			world.getComponent(string, Render2DTextComponent.class).color.set(0.9f, 0.2f, 0.0f);
+		
+		int string2 = this.world.createEntity();
+		world.addComponent(string2, Transform2DComponent.class);
+			world.getComponent(string2, Transform2DComponent.class).transform.position.set(1.1f, 0.0f);
+			world.getComponent(string2, Transform2DComponent.class).transform.scale.set(0.5f, 0.5f);
+		world.addComponent(string2, Render2DTextComponent.class);
+			world.getComponent(string2, Render2DTextComponent.class).string = "Prdel";
+			world.getComponent(string2, Render2DTextComponent.class).color.set(0.0f, 0.5f, 0.8f);
 			
 		System.out.println("...");
 		

@@ -4,13 +4,19 @@ import asteroids.subsystems.render3D.Shader;
 import asteroids.World;
 import asteroids.components.CameraComponent;
 import asteroids.components.Geometry2D.*;
+import asteroids.components.Geometry3D.Render3DMesh.Texture;
 import asteroids.math.Matrix4f;
+import asteroids.math.Pair;
 import asteroids.math.Vector2f;
 import asteroids.math.Vector3f;
 import asteroids.subsystems.render3D.Framebuffer;
 import asteroids.subsystems.render3D.Postprocessing.*;
+import java.util.HashMap;
+import java.util.Map;
 import org.lwjgl.opengl.Display;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
@@ -18,6 +24,9 @@ import static org.lwjgl.opengl.GL30.*;
 public class Render2DTextSubsystem extends Subsystem
 {
 	private Shader shader;
+	private Texture fontTexture;
+	private Map<Character, Pair<Integer, Integer>> alphabet;
+	
 	private CameraComponent cameraComponent;
 	private Matrix4f viewTransformMatrix;
 	private int cameraEntityId;
@@ -28,20 +37,27 @@ public class Render2DTextSubsystem extends Subsystem
 	
 	public Render2DTextSubsystem()
 	{
-		super();
-		
 		//shader setup
 		shader = new Shader();
-		shader.addShader("render2D/line2D.vs", GL_VERTEX_SHADER);
+		shader.addShader("render2D/text2D.vs", GL_VERTEX_SHADER);
 		//shader.addShader("render2D/line2D.gs", GL_GEOMETRY_SHADER);
-		shader.addShader("render2D/line2D.fs", GL_FRAGMENT_SHADER);
+		shader.addShader("render2D/text2D.fs", GL_FRAGMENT_SHADER);
 		shader.addAttribute(0, "position");
+		shader.addAttribute(1, "tex");
 		shader.addAttribute(4, "color");
 		shader.addOutput(0, "outDiffuse");
 		shader.link();
 		shader.addUniform("M");
 		shader.addUniform("V");
 		shader.addUniform("P");
+		shader.addUniform("diffuseSampler");
+		
+		//font texture setup
+		this.fontTexture = new Texture("font.png", Texture.NEAREST_FILTERING);
+		
+		//alphabet setup
+		this.alphabet = new HashMap();
+		this.alphabet.put('a', new Pair(0, 4));
 		
 		//default camera setup
 		this.cameraComponent = new CameraComponent();
@@ -78,17 +94,20 @@ public class Render2DTextSubsystem extends Subsystem
 		
 //RENDERING TO BUFFEROBJECT
 		this.multisampleFramebuffer.bind();
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glDisable(GL_DEPTH_TEST);
+		glFrontFace(GL_CW);
+		glEnable(GL_CULL_FACE);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		//iterate through geometry
 		for(int entityId : this.getList("primary"))
 		{
-			//System.out.println(entityId);
+			
 			Render2DTextComponent render2DTextComponent = world.getComponent(entityId, Render2DTextComponent.class);
 			Transform2DComponent transform2DComponent = world.getComponent(entityId, Transform2DComponent.class);
 			Matrix4f modelTransformMatrix = transform2DComponent.getWorldMatrix();
-			renderVBO(modelTransformMatrix, render2DTextComponent.vbo, render2DTextComponent.ibo, render2DTextComponent.iboCount, render2DTextComponent.color, GL_LINE_STRIP);
+			renderVBO(modelTransformMatrix, render2DTextComponent.vbo, render2DTextComponent.ibo, render2DTextComponent.iboCount, render2DTextComponent.color, GL_TRIANGLES);
+			System.out.println(entityId + ": " + render2DTextComponent.string);
 		}
 		//debug
 //		renderColliders(world);
@@ -102,9 +121,9 @@ public class Render2DTextSubsystem extends Subsystem
 		
 		//POSTITERATE (EFFECTS, RENDER TO SCREEN)
 		int finalOutput = this.singlesampleFramebuffer.getTexture(0);
-		finalOutput = this.effectManager.getEffect("hblur", HorizontalBlurEffect.class).apply(this.singlesampleFramebuffer.getTexture(0));
-		finalOutput = this.effectManager.getEffect("vblur", VerticalBlurEffect.class).apply(finalOutput);
-		finalOutput = this.effectManager.getEffect("combine", CombineEffect.class).apply(this.singlesampleFramebuffer.getTexture(0), 1f, finalOutput, 3f);
+//		finalOutput = this.effectManager.getEffect("hblur", HorizontalBlurEffect.class).apply(this.singlesampleFramebuffer.getTexture(0));
+//		finalOutput = this.effectManager.getEffect("vblur", VerticalBlurEffect.class).apply(finalOutput);
+//		finalOutput = this.effectManager.getEffect("combine", CombineEffect.class).apply(this.singlesampleFramebuffer.getTexture(0), 1f, finalOutput, 3f);
 		glViewport(0, 0, Display.getWidth(), Display.getHeight());
 		this.effectManager.getEffect("draw", DrawEffect.class).apply(finalOutput);
 		
@@ -115,23 +134,33 @@ public class Render2DTextSubsystem extends Subsystem
 	//render scene using VBO
 	private void renderVBO(Matrix4f modelTransformMatrix, int vbo, int ibo, int iboCount, Vector3f color, int primitiveType)
 	{
-		glUseProgram(this.shader.getId());
-		//this.shader.updateUniforms(modelTransformMatrix, this.viewTransformMatrix, this.cameraComponent);
-
-		Matrix4f M = modelTransformMatrix;
-		Matrix4f P = this.cameraComponent.projection;
-		this.shader.setUniform("M", M);
-		this.shader.setUniform("V", this.viewTransformMatrix);
-		this.shader.setUniform("P", P);
+		//activate texture in slot 0: diffuse
+		glActiveTexture(GL_TEXTURE0);
+			this.fontTexture.bind();
 		
-		glVertexAttrib3f(4, color.x, color.y, color.z);
+		//use shader
+		glUseProgram(this.shader.getId());
+		
+		//update uniforms
+		this.shader.setUniform("M", modelTransformMatrix);
+		this.shader.setUniform("V", this.viewTransformMatrix);
+		this.shader.setUniform("P", this.cameraComponent.projection);
+		this.shader.setUniform("diffuseSampler", GL_TEXTURE0);
+		
+		
 		glEnableVertexAttribArray(0);
-			glBindBuffer(GL_ARRAY_BUFFER, vbo);
-				glVertexAttribPointer(0, 2, GL_FLOAT, false, 2 * 4, 0);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-				glDrawElements(primitiveType, iboCount, GL_UNSIGNED_INT, 0);
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glEnableVertexAttribArray(1);
+		
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);	
+			glVertexAttribPointer(0, 2, GL_FLOAT, false, 4 * 4, 0);
+			glVertexAttribPointer(1, 2, GL_FLOAT, false, 4 * 4, 8);
+			glVertexAttrib3f(4, color.x, color.y, color.z);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+			glDrawElements(primitiveType, iboCount, GL_UNSIGNED_INT, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		
 		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
 	}
 
 	@Override	

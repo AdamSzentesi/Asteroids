@@ -28,21 +28,21 @@ public class Material
 	
 	public void loadDiffuseTexture(String fileName)
 	{
-		this.diffuseTexture = new Texture(fileName);
+		this.diffuseTexture = new Texture(fileName, Texture.LINEAR_FILTERING);
 	}
 	
 	public void loadSpecularTexture(String fileName)
 	{
-		this.specularTexture = new Texture(fileName);
+		this.specularTexture = new Texture(fileName, Texture.LINEAR_FILTERING);
 	}
 	
 	public void loadNormalTexture(String fileName)
 	{
-		this.normalTexture = new Texture(fileName);
+		this.normalTexture = new Texture(fileName, Texture.LINEAR_FILTERING);
 	}
 	
 	public void loadEmissionTexture(String fileName)
 	{
-		this.emissionTexture = new Texture(fileName);
+		this.emissionTexture = new Texture(fileName, Texture.LINEAR_FILTERING);
 	}
 }

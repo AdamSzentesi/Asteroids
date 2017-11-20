@@ -11,10 +11,13 @@ import asteroids.Util;
 public class Texture
 {
 	private int id;
+	public static final int LINEAR_FILTERING = GL_LINEAR;
+	public static final int NEAREST_FILTERING = GL_NEAREST;
 	
-	public Texture(String fileName)
+	public Texture(String fileName, int filtering)
 	{
-		this.id = loadTexture(fileName);
+		this.id = loadTexture(fileName, filtering);
+		System.out.println();
 		System.out.println("Texture loaded at buffer: " + id);
 	}
 	
@@ -50,7 +53,7 @@ public class Texture
 		return this.id;
 	}
 	
-	private int loadTexture(String fileName)
+	private int loadTexture(String fileName, int filtering)
 	{
 		try
 		{
@@ -83,8 +86,8 @@ public class Texture
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filtering);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filtering);
 
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.getWidth(), image.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
 			
