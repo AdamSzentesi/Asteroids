@@ -1,6 +1,6 @@
 package asteroids;
 
-import asteroids.games.Testgame;
+import asteroids.games.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,7 +15,7 @@ public class CoreEngine
 	{
 		this.delta = (float) 1 / FPS;
 		this.running = false;
-		this.game = new Testgame(width, height);
+		this.game = new Text(width, height);
 		
 		Window.create(width, height, title);
 	}

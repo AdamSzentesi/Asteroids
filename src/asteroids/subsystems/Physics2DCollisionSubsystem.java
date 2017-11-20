@@ -18,7 +18,7 @@ import java.util.List;
 public class Physics2DCollisionSubsystem extends Subsystem
 {
 	private final float distanceBuffer = 0.01f;
-	private Grid grid = new Grid(32, new Vector2f(-2, -2), 4, 4);
+	private Grid grid = new Grid(16, new Vector2f(-2, -2), 4, 4);
 	
 	private final CollisionTestPointCircle collisionTestPointCircle = new CollisionTestPointCircle();
 	private final CollisionTestCircleLine collisionTestCircleLine = new CollisionTestCircleLine();
@@ -42,11 +42,15 @@ public class Physics2DCollisionSubsystem extends Subsystem
 		this.grid.clear();
 		for(int entityId : this.getList("primary"))
 		{
-			Matrix4f rotateScaleMatrix = new Matrix4f().initIdentity();
+			Transform2DComponent transform2DComponent = world.getComponent(entityId, Transform2DComponent.class);
+			Matrix4f rotateScaleMatrix = transform2DComponent.getWorldMatrix();//no
 			Physics2DAABB colliderAABB = world.getComponent(entityId, Collider2DComponent.class).getAABB(rotateScaleMatrix);
-			Vector2f firstPosition = world.getComponent(entityId, Transform2DComponent.class).lastTransform.position;
-			Vector2f secondPosition = world.getComponent(entityId, Transform2DComponent.class).transform.position;
+			Vector2f firstPosition = transform2DComponent.lastTransform.position;
+			Vector2f secondPosition = transform2DComponent.transform.position;
 			Physics2DAABB box = getMotionAABB(colliderAABB, firstPosition, secondPosition);
+			
+//			Matrix4f worldMatrix = world.getComponent(entityId, Transform2DComponent.class).getWorldMatrix();
+//			Physics2DAABB box = getMotionAABB2(colliderAABB, firstPosition, secondPosition);
 			grid.insert(box, entityId);
 		}
 		
@@ -55,7 +59,7 @@ public class Physics2DCollisionSubsystem extends Subsystem
 		{
 			collide(collisionList, world, delta);
 		}
-		//grid.debug();
+//		grid.debug();
 	}
 	
 	private void collide(List<Integer> colliders, World world, float delta)

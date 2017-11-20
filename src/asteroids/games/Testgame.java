@@ -103,8 +103,8 @@ public class Testgame extends Game
 			);
 			world.getComponent(player, Render2DLineComponent.class).color.set(0.0f, 1.0f, 1.0f);
 		world.addComponent(player, Collider2DComponent.class);
-//			world.getComponent(player, Collider2DComponent.class).collider2DShape = new Collider2DShapeCircle(0.10f);
-			world.getComponent(player, Collider2DComponent.class).setShape(new Collider2DShapeCircle(0.10f));
+			//world.getComponent(player, Collider2DComponent.class).setShape(new Collider2DShapeCircle(0.10f));
+			world.getComponent(player, Collider2DComponent.class).setShape(new Collider2DShapeRectangle(0.1f, 0.8f));
 			world.getComponent(player, Collider2DComponent.class).position.set(0.0f, 0.0f);
 		world.addComponent(player, Rigidbody2DComponent.class);
 			world.getComponent(player, Rigidbody2DComponent.class).mass = 3.0f;
