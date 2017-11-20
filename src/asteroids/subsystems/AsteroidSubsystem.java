@@ -113,7 +113,8 @@ public class AsteroidSubsystem extends Subsystem
 					}
 					case "DISPERSE":
 					{
-						disperse();
+						System.out.println("dis");
+						disperse(world);
 						break;
 					}
 				}
@@ -123,7 +124,7 @@ public class AsteroidSubsystem extends Subsystem
 		if(this.timer <= 0)
 		{
 			summon(world, new Vector2f(-1.0f, -1.0f), (byte)3);
-			this.timer = 5.0f;
+			this.timer = 1.0f;
 		}
 		this.timer -= delta;
 	}
@@ -149,11 +150,12 @@ public class AsteroidSubsystem extends Subsystem
 			world.getComponent(entityId, RotateComponent.class).rate = this.random.nextFloat() * 50 - 25;
 	}
 	
-	private void disperse()
+	private void disperse(World world)
 	{
 		for(int entityId : getPrimaryList())
 		{
-			
+			Rigidbody2DComponent rigidbody2DComponent = world.getComponent(entityId, Rigidbody2DComponent.class);
+			rigidbody2DComponent.velocity.set(0, -1);
 		}
 	}
 	

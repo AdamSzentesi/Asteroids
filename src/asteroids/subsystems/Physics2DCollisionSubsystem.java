@@ -18,7 +18,7 @@ import java.util.List;
 public class Physics2DCollisionSubsystem extends Subsystem
 {
 	private final float distanceBuffer = 0.01f;
-	private Grid grid = new Grid(16, new Vector2f(-2, -2), 4, 4);
+	private Grid grid = new Grid(32, new Vector2f(-2, -2), 4, 4);
 	
 	private final CollisionTestPointCircle collisionTestPointCircle = new CollisionTestPointCircle();
 	private final CollisionTestCircleLine collisionTestCircleLine = new CollisionTestCircleLine();
@@ -38,8 +38,6 @@ public class Physics2DCollisionSubsystem extends Subsystem
 	@Override
 	public void process(World world, float delta)
 	{
-		long time0 = System.nanoTime();
-
 		//grid
 		this.grid.clear();
 		for(int entityId : this.getList("primary"))
@@ -49,18 +47,15 @@ public class Physics2DCollisionSubsystem extends Subsystem
 			Vector2f firstPosition = world.getComponent(entityId, Transform2DComponent.class).lastTransform.position;
 			Vector2f secondPosition = world.getComponent(entityId, Transform2DComponent.class).transform.position;
 			Physics2DAABB box = getMotionAABB(colliderAABB, firstPosition, secondPosition);
-//			Physics2DAABB box = new Physics2DAABB(colliderAABB.min.add(secondPosition), colliderAABB.max.add(secondPosition));
-			
 			grid.insert(box, entityId);
 		}
-		
-//		System.out.println("time 1: " + (System.nanoTime() - time0));
 		
 		List<List<Integer>> cycle = grid.getFullList();
 		for(List<Integer> collisionList : cycle)
 		{
 			collide(collisionList, world, delta);
 		}
+		//grid.debug();
 	}
 	
 	private void collide(List<Integer> colliders, World world, float delta)
@@ -93,8 +88,6 @@ public class Physics2DCollisionSubsystem extends Subsystem
 					
 					if(ignore == false)
 					{
-						System.out.println("COLLIDING");
-						
 						Transform2DComponent transform2DComponentB = world.getComponent(entityIdB, Transform2DComponent.class);
 						Collider2DComponent collider2DComponentB = world.getComponent(entityIdB, Collider2DComponent.class);				
 						Vector2f positionB = transform2DComponentB.transform.getMatrix().transform(collider2DComponentB.position);
@@ -219,6 +212,6 @@ public class Physics2DCollisionSubsystem extends Subsystem
 //		System.out.println("mov " + firstPosition.x + "," + firstPosition.y + " --- " + secondPosition.x + "," + secondPosition.y);
 //		System.out.println("fin " + min.x + "," + min.y + " --- " + max.x + "," + max.y);
 		
-		return new Physics2DAABB(firstPosition, firstPosition);
+		return new Physics2DAABB(min, max);
 	}
 }

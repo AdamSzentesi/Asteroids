@@ -51,6 +51,16 @@ public class Grid
 			regionMinY--;
 		}
 		
+		if(regionMinX < 0)
+		{
+			regionMinX = 0;
+		}
+		
+		if(regionMinY < 0)
+		{
+			regionMinY = 0;
+		}
+		
 		int regionMaxX = (int)maxX;
 		if(regionMaxX >= this.level)
 		{
@@ -123,6 +133,26 @@ public class Grid
 		{
 			Arrays.fill(list, null);
 		}	
+	}
+
+	public void debug()
+	{
+		for(List[] list : this.cells)
+		{
+			for(List item : list)
+			{
+				if(item == null)
+				{
+					System.out.print(". ");
+				}
+				else
+				{
+					System.out.print("X ");
+				}
+				
+			}
+			System.out.println();
+		}
 	}
 
 }
