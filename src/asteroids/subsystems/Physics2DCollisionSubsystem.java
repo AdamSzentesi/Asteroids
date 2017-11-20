@@ -9,6 +9,7 @@ import asteroids.components.Geometry2D.Rigidbody2DComponent;
 import asteroids.components.Geometry2D.Transform2DComponent;
 import asteroids.geometry.GeometryUtils;
 import asteroids.math.Grid;
+import asteroids.math.Matrix4f;
 import asteroids.math.Vector2f;
 import asteroids.subsystems.physics2D.*;
 import java.util.ArrayList;
@@ -43,9 +44,10 @@ public class Physics2DCollisionSubsystem extends Subsystem
 		this.grid.clear();
 		for(int entityId : this.getList("primary"))
 		{
-			Physics2DAABB colliderAABB = world.getComponent(entityId, Collider2DComponent.class).aabb;
-			Vector2f secondPosition = world.getComponent(entityId, Transform2DComponent.class).transform.position;
+			Matrix4f rotateScaleMatrix = new Matrix4f().initIdentity();
+			Physics2DAABB colliderAABB = world.getComponent(entityId, Collider2DComponent.class).getAABB(rotateScaleMatrix);
 			Vector2f firstPosition = world.getComponent(entityId, Transform2DComponent.class).lastTransform.position;
+			Vector2f secondPosition = world.getComponent(entityId, Transform2DComponent.class).transform.position;
 			Physics2DAABB box = getMotionAABB(colliderAABB, firstPosition, secondPosition);
 //			Physics2DAABB box = new Physics2DAABB(colliderAABB.min.add(secondPosition), colliderAABB.max.add(secondPosition));
 			
@@ -77,7 +79,7 @@ public class Physics2DCollisionSubsystem extends Subsystem
 				//iterate through comparing colliders
 				for(int b = a + 1; b < colliders.size(); b++)
 				{
-					//TODO: collision groups, ignores
+					//TODO: collision groups
 					int entityIdB = colliders.get(b);
 					boolean ignore = false;
 					
@@ -91,6 +93,8 @@ public class Physics2DCollisionSubsystem extends Subsystem
 					
 					if(ignore == false)
 					{
+						System.out.println("COLLIDING");
+						
 						Transform2DComponent transform2DComponentB = world.getComponent(entityIdB, Transform2DComponent.class);
 						Collider2DComponent collider2DComponentB = world.getComponent(entityIdB, Collider2DComponent.class);				
 						Vector2f positionB = transform2DComponentB.transform.getMatrix().transform(collider2DComponentB.position);
@@ -211,9 +215,9 @@ public class Physics2DCollisionSubsystem extends Subsystem
 		Vector2f min = new Vector2f(minX, minY).add(colliderAABB.min);
 		Vector2f max = new Vector2f(maxX, maxY).add(colliderAABB.max);
 		
-		System.out.println("min " + colliderAABB.min.x + "," + colliderAABB.min.y + " max" + colliderAABB.max.x + "," + colliderAABB.max.y);
-//		System.out.println("min " + minX + "," + minY + " max" + maxX + "," + maxY);
-//		System.out.println("fin " + min.x + "," + min.y + "    " + max.x + "," + max.y);
+//		System.out.println("col " + colliderAABB.min.x + "," + colliderAABB.min.y + " max " + colliderAABB.max.x + "," + colliderAABB.max.y);
+//		System.out.println("mov " + firstPosition.x + "," + firstPosition.y + " --- " + secondPosition.x + "," + secondPosition.y);
+//		System.out.println("fin " + min.x + "," + min.y + " --- " + max.x + "," + max.y);
 		
 		return new Physics2DAABB(firstPosition, firstPosition);
 	}

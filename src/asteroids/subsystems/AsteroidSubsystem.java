@@ -97,7 +97,7 @@ public class AsteroidSubsystem extends Subsystem
 							if(asteroidComponent.level > 0)
 							{
 								//update old
-								world.getComponent(entityId, Collider2DComponent.class).collider2DShape = new Collider2DShapeCircle(asteroidComponent.level * 0.1f);
+								world.getComponent(entityId, Collider2DComponent.class).setShape(new Collider2DShapeCircle(asteroidComponent.level * 0.1f));
 								world.getComponent(entityId, Rigidbody2DComponent.class).velocity.set(getRandomVector().multiply((float)1/asteroidComponent.level));
 								world.getComponent(entityId, Transform2DComponent.class).transform.scale.set(asteroidComponent.level, asteroidComponent.level);
 								
@@ -138,7 +138,7 @@ public class AsteroidSubsystem extends Subsystem
 			world.getComponent(entityId, Render2DLineComponent.class).set(this.vbo, this.vboCount, this.ibo, this.iboCount);
 			world.getComponent(entityId, Render2DLineComponent.class).color.set(1.0f, 0.8f, 0.2f);
 		world.addComponent(entityId, Collider2DComponent.class);
-			world.getComponent(entityId, Collider2DComponent.class).collider2DShape = new Collider2DShapeCircle(level * 0.1f);
+			world.getComponent(entityId, Collider2DComponent.class).setShape(new Collider2DShapeCircle(level * 0.1f));
 		world.addComponent(entityId, Rigidbody2DComponent.class);
 			world.getComponent(entityId, Rigidbody2DComponent.class).mass = 3000.0f;
 			world.getComponent(entityId, Rigidbody2DComponent.class).maxVelocity = 5.0f;

@@ -2,21 +2,14 @@ package asteroids.components.Collider.Shapes;
 
 import asteroids.math.Matrix4f;
 import asteroids.math.Vector2f;
-import asteroids.subsystems.render2D.primitives.Debug2DPrimitiveRectangle;
+import asteroids.subsystems.physics2D.Physics2DAABB;
 
 public class Collider2DShapeRectangle extends Collider2DShape
 {
-	private Vector2f size;
-	private Vector2f[] vertices = new Vector2f[4];
-	
-	public Collider2DShapeRectangle()
-	{
-		this(1.0f, 1.0f);
-	}
+	private Vector2f[] vertices;
 	
 	public Collider2DShapeRectangle(float x, float y)
 	{
-		this.size = new Vector2f(x, y);
 		//this.debug2DPrimitive = new Debug2DPrimitiveRectangle();
 		this.vertices = new Vector2f[]
 		{
@@ -25,11 +18,12 @@ public class Collider2DShapeRectangle extends Collider2DShape
 			new Vector2f(x/2, -y/2),
 			new Vector2f(-x/2, -y/2)
 		};
+		this.aabb = new Physics2DAABB(new Vector2f(-x/2, -x/2), new Vector2f(x/2, x/2));
 		this.shapeKey = 1 << 4;
 	}
 	
 	@Override
-	public Vector2f[] getAABBSize (Matrix4f rotationScaleMatrix)
+	public void updateAABB(Matrix4f rotationScaleMatrix)
 	{
 		float minX = 0;
 		float minY = 0;
@@ -39,23 +33,11 @@ public class Collider2DShapeRectangle extends Collider2DShape
 		for(Vector2f vertex : this.vertices)
 		{
 			Vector2f translatedVertex = rotationScaleMatrix.transform(vertex);
-			minX = Math.min(minX, translatedVertex.x);
-			minY = Math.min(minY, translatedVertex.y);
-			maxX = Math.max(maxX, translatedVertex.x);
-			maxY = Math.max(maxY, translatedVertex.y);
+			this.aabb.min.x = Math.min(minX, translatedVertex.x);
+			this.aabb.min.y = Math.min(minY, translatedVertex.y);
+			this.aabb.max.x = Math.max(maxX, translatedVertex.x);
+			this.aabb.max.y = Math.max(maxY, translatedVertex.y);
 		}
-		
-		return new Vector2f[]
-		{
-			new Vector2f(minX, minY),
-			new Vector2f(maxX, maxY)
-		};
-		//return new Vector2f(maxX*2, maxY*2);
 	}
 	
-	@Override
-	public Vector2f getColliderSize()
-	{
-		return this.size;
-	}
 }

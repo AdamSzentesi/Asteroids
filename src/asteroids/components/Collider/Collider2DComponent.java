@@ -8,15 +8,14 @@ import asteroids.subsystems.physics2D.Physics2DAABB;
 
 public class Collider2DComponent extends Component
 {
-	public Collider2DShape collider2DShape;
+	private Collider2DShape collider2DShape;
 	public Vector2f position = new Vector2f();
-	public Physics2DAABB aabb = new Physics2DAABB(new Vector2f(-0.1f, -0.1f), new Vector2f(0.1f, 0.1f));
 	public boolean isTrigger = false;
 	public int target;
 	
 	public Collider2DComponent()
 	{
-		this.collider2DShape = new Collider2DShapeRectangle();
+		this.collider2DShape = new Collider2DShapeRectangle(1, 1);
 	}
 	
 	//returns certain component in subclass casted form
@@ -25,19 +24,20 @@ public class Collider2DComponent extends Component
 		//int componentId = this.entityComponentRelations[entityId][getComponentId(c)];
 		return c.cast(this.collider2DShape);
 	}
-	
-	public Vector2f[] getAABBSize (Matrix4f rotationMatrix)
-	{
-		return this.collider2DShape.getAABBSize(rotationMatrix);
-	}
-	
-	public Vector2f getColliderSize()
-	{
-		return this.collider2DShape.getColliderSize();
-	}
-	
+
 	public int getShapeKey()
 	{
 		return this.collider2DShape.shapeKey;
 	}
+	
+	public Physics2DAABB getAABB(Matrix4f rotationScaleMatrix)
+	{
+		return this.collider2DShape.getAABB(rotationScaleMatrix);
+	}
+	
+	public void setShape(Collider2DShape collider2DShape)
+	{
+		this.collider2DShape = collider2DShape;
+	}
+	
 }
