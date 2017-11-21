@@ -16,7 +16,11 @@ uniform mat4 P;
 
 void main()
 {
-	gl_Position = P * V * M * vec4(position, 0.0, 1.0);
+	mat4 view = V;
+	mat4 projection = P;
+	mat4 model = M;
+	//gl_Position = P * V * M * vec4(position, 0.0, 1.0);
+	gl_Position = V * M * vec4(position, -3.0, 1.0);
 	outData.color = color;
 	outData.tex = tex;
 }

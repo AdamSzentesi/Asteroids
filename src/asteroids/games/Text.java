@@ -32,7 +32,7 @@ public class Text extends Game
 		//SUBSYSTEMS + LOCKS
 		world.addSubsystem(Rotate2DSubsystem.class, transform2DComponentKey | rotateComponentKey);
 		world.addSubsystem(Update2DCameraSubsystem.class, cameraComponentKey | transform2DComponentKey);
-		world.addRenderSubsystem(Render2DTextSubsystem.class, render2DTextComponent | transform2DComponentKey);
+		world.addRenderSubsystem(Render2DTextSubsystem.class, render2DTextComponent);
 		System.out.println("...");
 		
 		//ENTITIES + COMPONENTS + VALUES
@@ -46,7 +46,7 @@ public class Text extends Game
 		world.addComponent(string, Transform2DComponent.class);
 			world.getComponent(string, Transform2DComponent.class).transform.position.set(0.0f, 0.0f);
 		world.addComponent(string, Render2DTextComponent.class);
-			world.getComponent(string, Render2DTextComponent.class).string = "Ahoj";
+			world.getComponent(string, Render2DTextComponent.class).set("Ahoj");
 			world.getComponent(string, Render2DTextComponent.class).color.set(0.9f, 0.2f, 0.0f);
 		
 		int string2 = this.world.createEntity();
@@ -54,7 +54,8 @@ public class Text extends Game
 			world.getComponent(string2, Transform2DComponent.class).transform.position.set(1.1f, 0.0f);
 			world.getComponent(string2, Transform2DComponent.class).transform.scale.set(0.5f, 0.5f);
 		world.addComponent(string2, Render2DTextComponent.class);
-			world.getComponent(string2, Render2DTextComponent.class).string = "Prdel";
+			world.getComponent(string2, Render2DTextComponent.class).displayPosition.set(0.1f, 0.1f);
+			world.getComponent(string2, Render2DTextComponent.class).set("Prdel");
 			world.getComponent(string2, Render2DTextComponent.class).color.set(0.0f, 0.5f, 0.8f);
 			
 		System.out.println("...");
@@ -62,7 +63,7 @@ public class Text extends Game
 		//HIERARCHY
 		
 		//SUBSYSTEM ADDITIONS
-		world.getRenderSubsystem(Render2DTextSubsystem.class).setActiveCamera(world, camera);
+		world.getRenderSubsystem(Render2DTextSubsystem.class).setResolution(this.getWidth(), this.getHeight());
 
 	}
 

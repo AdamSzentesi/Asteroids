@@ -2,6 +2,7 @@ package asteroids.components.Geometry2D;
 
 import asteroids.Util;
 import asteroids.components.Component;
+import asteroids.math.Vector2f;
 import asteroids.math.Vector3f;
 import asteroids.subsystems.render3D.OpenGLUtils;
 import java.nio.FloatBuffer;
@@ -15,9 +16,9 @@ public class Render2DTextComponent extends Component
 	public static int vbo;
 	public static int ibo;
 	public static int iboCount;
-
-	public Vector3f color = new Vector3f(1.0f, 1.0f, 1.0f);
 	
+	public Vector2f displayPosition;
+	public Vector3f color;
 	public String string;
 	
 	public Render2DTextComponent()
@@ -48,7 +49,9 @@ public class Render2DTextComponent extends Component
 			this.iboCount = indexArray.length;		
 			initialized = true;
 		}
-
+		this.displayPosition = new Vector2f();
+		this.color = new Vector3f(1.0f, 1.0f, 1.0f);
+		this.string = "DUMMY";
 	}
 	
 	@Override
@@ -57,4 +60,15 @@ public class Render2DTextComponent extends Component
 		glDeleteBuffers(this.vbo);
 		glDeleteBuffers(this.ibo);
 	}
+
+	public void set(String string)
+	{
+		this.string = string;
+	}
+	
+	public String get()
+	{
+		return this.string;
+	}
+	
 }

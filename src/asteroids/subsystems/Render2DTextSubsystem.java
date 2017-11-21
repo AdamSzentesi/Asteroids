@@ -79,10 +79,10 @@ public class Render2DTextSubsystem extends Subsystem
 	}
 	
 	//set the active camera for this renderingEngine, MOVE TO OWN SYSTEM!!!
-	public void setActiveCamera(World world, int cameraEntityId)
+	public void setResolution(int width, int height)
 	{
-		this.cameraComponent = world.getComponent(cameraEntityId, CameraComponent.class);
-		this.cameraEntityId = cameraEntityId;
+		this.cameraComponent = new CameraComponent();
+		this.cameraComponent.projection.initOrthographic(-width/2, width/2, height/2, -height/2, -1, 1);
 	}
 	
 	@Override
@@ -104,10 +104,14 @@ public class Render2DTextSubsystem extends Subsystem
 		{
 			
 			Render2DTextComponent render2DTextComponent = world.getComponent(entityId, Render2DTextComponent.class);
-			Transform2DComponent transform2DComponent = world.getComponent(entityId, Transform2DComponent.class);
-			Matrix4f modelTransformMatrix = transform2DComponent.getWorldMatrix();
-			renderVBO(modelTransformMatrix, render2DTextComponent.vbo, render2DTextComponent.ibo, render2DTextComponent.iboCount, render2DTextComponent.color, GL_TRIANGLES);
-			System.out.println(entityId + ": " + render2DTextComponent.string);
+			//Transform2DComponent transform2DComponent = world.getComponent(entityId, Transform2DComponent.class);
+			//Matrix4f modelTransformMatrix = transform2DComponent.getWorldMatrix();
+			Vector2f position = render2DTextComponent.displayPosition;
+			Matrix4f modelTransformMatrix = new Matrix4f().initTranslation(position.x, position.y, 0);
+			for(int i = 0; i < render2DTextComponent.get().length(); i++)
+			{
+				renderVBO(modelTransformMatrix, render2DTextComponent.vbo, render2DTextComponent.ibo, render2DTextComponent.iboCount, render2DTextComponent.color, GL_TRIANGLES, i);
+			}
 		}
 		//debug
 //		renderColliders(world);
@@ -132,7 +136,7 @@ public class Render2DTextSubsystem extends Subsystem
 	}
 	
 	//render scene using VBO
-	private void renderVBO(Matrix4f modelTransformMatrix, int vbo, int ibo, int iboCount, Vector3f color, int primitiveType)
+	private void renderVBO(Matrix4f modelTransformMatrix, int vbo, int ibo, int iboCount, Vector3f color, int primitiveType, int charPosition)
 	{
 		//activate texture in slot 0: diffuse
 		glActiveTexture(GL_TEXTURE0);

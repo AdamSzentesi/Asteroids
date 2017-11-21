@@ -23,6 +23,11 @@ void main()
 		diffuse = diffuseTexture;
 	}
 
-  outDiffuse = diffuse;// * (sin(gl_FragCoord.y*20) + 3) / 4;
+	if(diffuse == vec4(1, 1, 1, 1))
+	{
+		discard;
+	}
+
+  outDiffuse = vec4(inData.color, 1.0);// * (sin(gl_FragCoord.y*20) + 3) / 4;
 
 }
