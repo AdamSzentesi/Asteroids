@@ -42,6 +42,7 @@ public class Testgame extends Game
 		long rigidbody2DComponentKey = world.registerComponent(Rigidbody2DComponent.class);
 		long collider2DComponentKey = world.registerComponent(Collider2DComponent.class);
 		long render2DLineComponentKey = world.registerComponent(Render2DLineComponent.class);
+		long render2DTextComponent = world.registerComponent(Render2DTextComponent.class);
 		
 		long cameraComponentKey = world.registerComponent(CameraComponent.class);
 		System.out.println("...");
@@ -62,7 +63,9 @@ public class Testgame extends Game
 		world.addSubsystem(Update2DCameraSubsystem.class, cameraComponentKey | transform2DComponentKey);
 		world.addRenderSubsystem(Render2DSubsystem.class, render2DLineComponentKey | transform2DComponentKey);
 			world.getRenderSubsystem(Render2DSubsystem.class).addLock("colliders", collider2DComponentKey | transform2DComponentKey);
+			world.getRenderSubsystem(Render2DSubsystem.class).addLock("text", render2DTextComponent);
 			world.getRenderSubsystem(Render2DSubsystem.class).active = true;
+
 		System.out.println("...");
 		
 		//ENTITIES + COMPONENTS + VALUES
@@ -155,6 +158,35 @@ public class Testgame extends Game
 				}
 			);
 			world.getComponent(field, Render2DLineComponent.class).color.set(1.0f, 1.0f, 1.0f);
+		
+		int scoreLabel = this.world.createEntity();
+		world.addComponent(scoreLabel, Render2DTextComponent.class);
+			world.getComponent(scoreLabel, Render2DTextComponent.class).setString("Score:");
+			world.getComponent(scoreLabel, Render2DTextComponent.class).color.set(1.0f, 1.0f, 1.0f);
+			world.getComponent(scoreLabel, Render2DTextComponent.class).setPosition(-480, 360);
+			world.getComponent(scoreLabel, Render2DTextComponent.class).setSize(16, 16);
+		
+		int score = this.world.createEntity();
+		world.addComponent(score, Render2DTextComponent.class);
+			world.getComponent(score, Render2DTextComponent.class).setString("666");
+			world.getComponent(score, Render2DTextComponent.class).color.set(0.0f, 1.0f, 1.0f);
+			world.getComponent(score, Render2DTextComponent.class).setPosition(-480, 344);
+			world.getComponent(score, Render2DTextComponent.class).setSize(16, 16);
+			
+		int livesLabel = this.world.createEntity();
+		world.addComponent(livesLabel, Render2DTextComponent.class);
+			world.getComponent(livesLabel, Render2DTextComponent.class).setString("lives:");
+			world.getComponent(livesLabel, Render2DTextComponent.class).color.set(1.0f, 1.0f, 1.0f);
+			world.getComponent(livesLabel, Render2DTextComponent.class).setPosition(416, 360);
+			world.getComponent(livesLabel, Render2DTextComponent.class).setSize(16, 16);
+			
+		int lives = this.world.createEntity();
+		world.addComponent(lives, Render2DTextComponent.class);
+			world.getComponent(lives, Render2DTextComponent.class).setString("100");
+			world.getComponent(lives, Render2DTextComponent.class).color.set(0.0f, 1.0f, 1.0f);
+			world.getComponent(lives, Render2DTextComponent.class).setPosition(416, 344);
+			world.getComponent(lives, Render2DTextComponent.class).setSize(16, 16);
+			
 		System.out.println("...");
 		
 		//HIERARCHY

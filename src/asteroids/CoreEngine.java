@@ -15,7 +15,7 @@ public class CoreEngine
 	{
 		this.delta = (float) 1 / FPS;
 		this.running = false;
-		this.game = new Text(width, height);
+		this.game = new Testgame(width, height);
 		
 		Window.create(width, height, title);
 	}

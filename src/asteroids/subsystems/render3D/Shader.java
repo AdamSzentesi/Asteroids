@@ -13,6 +13,8 @@ import asteroids.components.Geometry3D.PointLightComponent;
 import asteroids.components.Geometry3D.Render3DMesh.Material;
 import asteroids.components.Geometry3D.Transform3DComponent;
 import asteroids.math.Matrix3f;
+import asteroids.math.Pair;
+import asteroids.math.Vector2f;
 import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 
@@ -97,6 +99,10 @@ public class Shader
 	{
 		glUniform3f(uniforms.get(uniform), vector3f.getX(), vector3f.getY(), vector3f.getZ());
 	}
+	public void setUniform(String uniform, Vector2f vector)
+	{
+		glUniform2f(uniforms.get(uniform), vector.getX(), vector.getY());
+	}
 	public void setUniform(String uniform, Matrix4f matrix)
 	{
 		glUniformMatrix4(uniforms.get(uniform), true, Util.createFlippedBuffer(matrix));
@@ -112,6 +118,10 @@ public class Shader
 	public void setUniform(String uniform, int number)
 	{
 		glUniform1i(uniforms.get(uniform), number);
+	}
+	public void setUniform(String uniform, Pair<Integer, Integer> pair)
+	{
+		glUniform2i(uniforms.get(uniform), pair.a, pair.b);
 	}
 	public void setUniform(String uniform, PointLightComponent pointLight, Transform3DComponent transformLight, int id)
 	{

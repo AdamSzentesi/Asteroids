@@ -2,7 +2,6 @@ package asteroids.components.Geometry2D;
 
 import asteroids.Util;
 import asteroids.components.Component;
-import asteroids.math.Vector2f;
 import asteroids.math.Vector3f;
 import asteroids.subsystems.render3D.OpenGLUtils;
 import java.nio.FloatBuffer;
@@ -17,9 +16,12 @@ public class Render2DTextComponent extends Component
 	public static int ibo;
 	public static int iboCount;
 	
-	public Vector2f displayPosition;
+	public int x;
+	public int y;
 	public Vector3f color;
 	public String string;
+	public int width;
+	public int height;
 	
 	public Render2DTextComponent()
 	{
@@ -28,10 +30,10 @@ public class Render2DTextComponent extends Component
 			//vertex data
 			float[] vertexArray =
 			{
-				-0.5f, 0.5f, 0.0f, 0.25f,
-				0.5f, 0.5f, 0.0625f, 0.25f,
-				0.5f, -0.5f, 0.0625f, 0.3125f,
-				-0.5f, -0.5f, 0.0f, 0.3125f,
+				-0.5f, 0.5f, 0.0f, 0.0f,
+				0.5f, 0.5f, 0.0625f, 0.0f,
+				0.5f, -0.5f, 0.0625f, 0.0625f,
+				-0.5f, -0.5f, 0.0f, 0.0625f,
 			};
 			//index data
 			int[] indexArray =
@@ -49,9 +51,12 @@ public class Render2DTextComponent extends Component
 			this.iboCount = indexArray.length;		
 			initialized = true;
 		}
-		this.displayPosition = new Vector2f();
+		this.x = 0;
+		this.y = 0;
 		this.color = new Vector3f(1.0f, 1.0f, 1.0f);
 		this.string = "DUMMY";
+		this.width = 64;
+		this.height = 64;
 	}
 	
 	@Override
@@ -61,7 +66,7 @@ public class Render2DTextComponent extends Component
 		glDeleteBuffers(this.ibo);
 	}
 
-	public void set(String string)
+	public void setString(String string)
 	{
 		this.string = string;
 	}
@@ -69,6 +74,18 @@ public class Render2DTextComponent extends Component
 	public String get()
 	{
 		return this.string;
+	}
+	
+	public void setSize(int width, int height)
+	{
+		this.width = width;
+		this.height = height;
+	}
+	
+	public void setPosition(int x, int y)
+	{
+		this.x = x;
+		this.y = y;
 	}
 	
 }

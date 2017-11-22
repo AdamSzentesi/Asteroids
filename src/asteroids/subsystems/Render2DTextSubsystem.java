@@ -27,10 +27,6 @@ public class Render2DTextSubsystem extends Subsystem
 	private Texture fontTexture;
 	private Map<Character, Pair<Integer, Integer>> alphabet;
 	
-	private CameraComponent cameraComponent;
-	private Matrix4f viewTransformMatrix;
-	private int cameraEntityId;
-	
 	private Framebuffer multisampleFramebuffer;
 	private Framebuffer singlesampleFramebuffer;
 	private EffectManager effectManager;
@@ -47,10 +43,10 @@ public class Render2DTextSubsystem extends Subsystem
 		shader.addAttribute(4, "color");
 		shader.addOutput(0, "outDiffuse");
 		shader.link();
-		shader.addUniform("M");
-		shader.addUniform("V");
-		shader.addUniform("P");
+		shader.addUniform("displayPosition");
+		shader.addUniform("displaySize");
 		shader.addUniform("diffuseSampler");
+		shader.addUniform("character");
 		
 		//font texture setup
 		this.fontTexture = new Texture("font.png", Texture.NEAREST_FILTERING);
@@ -58,10 +54,38 @@ public class Render2DTextSubsystem extends Subsystem
 		//alphabet setup
 		this.alphabet = new HashMap();
 		this.alphabet.put('a', new Pair(0, 4));
+		this.alphabet.put('b', new Pair(1, 4));
+		this.alphabet.put('c', new Pair(2, 4));
+		this.alphabet.put('d', new Pair(3, 4));
+		this.alphabet.put('e', new Pair(4, 4));
+		this.alphabet.put('f', new Pair(5, 4));
+		this.alphabet.put('g', new Pair(6, 4));
+		this.alphabet.put('h', new Pair(7, 4));
+		this.alphabet.put('i', new Pair(8, 4));
+		this.alphabet.put('j', new Pair(9, 4));
+		this.alphabet.put('k', new Pair(10, 4));
+		this.alphabet.put('l', new Pair(11, 4));
+		this.alphabet.put('m', new Pair(12, 4));
+		this.alphabet.put('n', new Pair(13, 4));
+		this.alphabet.put('o', new Pair(14, 4));
+		this.alphabet.put('p', new Pair(15, 4));
 		
-		//default camera setup
-		this.cameraComponent = new CameraComponent();
-		this.cameraComponent.projection.initPerspective(45f, (float)Display.getWidth()/Display.getHeight(), 0.001f, 100.0f);
+		this.alphabet.put('q', new Pair(0, 5));
+		this.alphabet.put('r', new Pair(1, 5));
+		this.alphabet.put('s', new Pair(2, 5));
+		this.alphabet.put('t', new Pair(3, 5));
+		this.alphabet.put('u', new Pair(4, 5));
+		this.alphabet.put('v', new Pair(5, 5));
+		this.alphabet.put('w', new Pair(6, 5));
+		this.alphabet.put('x', new Pair(7, 5));
+		this.alphabet.put('y', new Pair(8, 5));
+		this.alphabet.put('z', new Pair(9, 5));
+		this.alphabet.put('[', new Pair(10, 5));
+		this.alphabet.put('\\', new Pair(11, 5));
+		this.alphabet.put(']', new Pair(12, 5));
+		this.alphabet.put('^', new Pair(13, 5));
+		this.alphabet.put('_', new Pair(14, 5));
+		this.alphabet.put('`', new Pair(15, 5));
 		
 		this.multisampleFramebuffer = new Framebuffer(Display.getWidth(), Display.getHeight(), 4);
 		this.multisampleFramebuffer.createRenderbuffer(GL_RGBA8, GL_COLOR_ATTACHMENT0, true);
@@ -78,19 +102,10 @@ public class Render2DTextSubsystem extends Subsystem
 		this.effectManager.addEffect("combine", new CombineEffect(multisampleFramebuffer.getWidth(), multisampleFramebuffer.getHeight()));
 	}
 	
-	//set the active camera for this renderingEngine, MOVE TO OWN SYSTEM!!!
-	public void setResolution(int width, int height)
-	{
-		this.cameraComponent = new CameraComponent();
-		this.cameraComponent.projection.initOrthographic(-width/2, width/2, height/2, -height/2, -1, 1);
-	}
-	
 	@Override
 	public void process(World world, float delta)
 	{
 		glLineWidth(1);
-		//get current camera view matrix
-		this.viewTransformMatrix = world.getComponent(this.cameraEntityId, CameraComponent.class).viewMatrix;
 		
 //RENDERING TO BUFFEROBJECT
 		this.multisampleFramebuffer.bind();
@@ -104,13 +119,11 @@ public class Render2DTextSubsystem extends Subsystem
 		{
 			
 			Render2DTextComponent render2DTextComponent = world.getComponent(entityId, Render2DTextComponent.class);
-			//Transform2DComponent transform2DComponent = world.getComponent(entityId, Transform2DComponent.class);
-			//Matrix4f modelTransformMatrix = transform2DComponent.getWorldMatrix();
-			Vector2f position = render2DTextComponent.displayPosition;
-			Matrix4f modelTransformMatrix = new Matrix4f().initTranslation(position.x, position.y, 0);
 			for(int i = 0; i < render2DTextComponent.get().length(); i++)
 			{
-				renderVBO(modelTransformMatrix, render2DTextComponent.vbo, render2DTextComponent.ibo, render2DTextComponent.iboCount, render2DTextComponent.color, GL_TRIANGLES, i);
+				Pair<Integer, Integer> character = this.alphabet.get(render2DTextComponent.string.charAt(i));
+				Vector2f characterPosition = new Vector2f(character.a, character.b);
+				renderVBO(render2DTextComponent.x + i * render2DTextComponent.width, render2DTextComponent.y, render2DTextComponent.width, render2DTextComponent.height, render2DTextComponent.vbo, render2DTextComponent.ibo, render2DTextComponent.iboCount, render2DTextComponent.color, GL_TRIANGLES, characterPosition);
 			}
 		}
 		//debug
@@ -136,7 +149,7 @@ public class Render2DTextSubsystem extends Subsystem
 	}
 	
 	//render scene using VBO
-	private void renderVBO(Matrix4f modelTransformMatrix, int vbo, int ibo, int iboCount, Vector3f color, int primitiveType, int charPosition)
+	private void renderVBO(int x, int y, int width, int height, int vbo, int ibo, int iboCount, Vector3f color, int primitiveType, Vector2f characterPosition)
 	{
 		//activate texture in slot 0: diffuse
 		glActiveTexture(GL_TEXTURE0);
@@ -145,12 +158,15 @@ public class Render2DTextSubsystem extends Subsystem
 		//use shader
 		glUseProgram(this.shader.getId());
 		
+		float halfWidth = (float)Display.getWidth() / 2;
+		float halfHeight = (float)Display.getHeight()/ 2;
+		Vector2f displayPosition = new Vector2f((1f / halfWidth) * x, (1f / halfHeight) * y);
+		Vector2f displaySize = new Vector2f((1f / halfWidth) * width, (1f / halfHeight) * height);
 		//update uniforms
-		this.shader.setUniform("M", modelTransformMatrix);
-		this.shader.setUniform("V", this.viewTransformMatrix);
-		this.shader.setUniform("P", this.cameraComponent.projection);
+		this.shader.setUniform("displayPosition", displayPosition);
+		this.shader.setUniform("displaySize", displaySize);
 		this.shader.setUniform("diffuseSampler", GL_TEXTURE0);
-		
+		this.shader.setUniform("character", characterPosition);
 		
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);

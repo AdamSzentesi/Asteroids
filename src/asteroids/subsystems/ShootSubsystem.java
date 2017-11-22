@@ -108,7 +108,7 @@ public class ShootSubsystem extends Subsystem
 			world.getComponent(summoned, Rigidbody2DComponent.class).maxVelocity = 50f;
 			world.getComponent(summoned, Rigidbody2DComponent.class).velocity.set(velocity);
 		world.addComponent(summoned, Projectile2DComponent.class);
-			world.getComponent(summoned, Projectile2DComponent.class).lifespan = 100.0f;
+			world.getComponent(summoned, Projectile2DComponent.class).lifespan = 1.0f;
 		world.addComponent(summoned, Collider2DComponent.class);
 			world.getComponent(summoned, Collider2DComponent.class).setShape(new Collider2DShapePoint());
 			world.getComponent(summoned, Collider2DComponent.class).position.set(0.0f, 0.0f);

@@ -46,16 +46,17 @@ public class Text extends Game
 		world.addComponent(string, Transform2DComponent.class);
 			world.getComponent(string, Transform2DComponent.class).transform.position.set(0.0f, 0.0f);
 		world.addComponent(string, Render2DTextComponent.class);
-			world.getComponent(string, Render2DTextComponent.class).set("Ahoj");
+			world.getComponent(string, Render2DTextComponent.class).setString("ahoj");
 			world.getComponent(string, Render2DTextComponent.class).color.set(0.9f, 0.2f, 0.0f);
 		
 		int string2 = this.world.createEntity();
 		world.addComponent(string2, Transform2DComponent.class);
 			world.getComponent(string2, Transform2DComponent.class).transform.position.set(1.1f, 0.0f);
-			world.getComponent(string2, Transform2DComponent.class).transform.scale.set(0.5f, 0.5f);
+			world.getComponent(string2, Transform2DComponent.class).transform.scale.set(1.0f, 1.0f);
 		world.addComponent(string2, Render2DTextComponent.class);
-			world.getComponent(string2, Render2DTextComponent.class).displayPosition.set(0.1f, 0.1f);
-			world.getComponent(string2, Render2DTextComponent.class).set("Prdel");
+			world.getComponent(string2, Render2DTextComponent.class).setString("prdel");	
+			world.getComponent(string2, Render2DTextComponent.class).setPosition(-200, 0);
+			world.getComponent(string2, Render2DTextComponent.class).setSize(8, 8);
 			world.getComponent(string2, Render2DTextComponent.class).color.set(0.0f, 0.5f, 0.8f);
 			
 		System.out.println("...");
@@ -63,7 +64,7 @@ public class Text extends Game
 		//HIERARCHY
 		
 		//SUBSYSTEM ADDITIONS
-		world.getRenderSubsystem(Render2DTextSubsystem.class).setResolution(this.getWidth(), this.getHeight());
+		
 
 	}
 
