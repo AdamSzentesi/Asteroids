@@ -2,27 +2,47 @@ package asteroids;
 
 abstract public class Game
 {
-	private int width;
-	private int height;
+	private StateManager stateManager;
 	
 	public Game(int width, int height)
 	{
-		this.width = width;
-		this.height = height;
+		this.stateManager = new StateManager();
 	}
 	
-	public int getWidth()
+	public final void pushState(State state)
 	{
-		return this.width;
+		this.stateManager.push(state);
 	}
 	
-	public int getHeight()
+	public final void popState()
 	{
-		return this.height;
+		this.stateManager.pop();
 	}
 	
-	abstract public void initialize();
-	abstract public void update(float delta);
-	abstract public void render();
-	abstract public void cleanUp();
+	public final void setState(State state)
+	{
+		this.popState();
+		this.pushState(state);
+	}
+	
+	public final void initialize()
+	{
+		this.stateManager.initialize();
+	}
+	
+	public final void update(float delta)
+	{
+		this.stateManager.update(delta);
+	}
+	
+	public final void render()
+	{
+		this.stateManager.render();
+	}
+	
+	public final void cleanUp()
+	{
+		this.stateManager.cleanUp();
+	}
+
 }

@@ -198,7 +198,7 @@ public class Render2DSubsystem extends Subsystem
 	@Override
 	public void process(World world, float delta)
 	{
-		glLineWidth(1);
+		glLineWidth(2);
 		//get current camera view matrix
 		this.viewTransformMatrix = world.getComponent(this.cameraEntityId, CameraComponent.class).viewMatrix;
 		
@@ -244,7 +244,7 @@ public class Render2DSubsystem extends Subsystem
 		int finalOutput = this.singlesampleFramebuffer.getTexture(0);
 		finalOutput = this.effectManager.getEffect("hblur", HorizontalBlurEffect.class).apply(finalOutput);
 		finalOutput = this.effectManager.getEffect("vblur", VerticalBlurEffect.class).apply(finalOutput);
-		finalOutput = this.effectManager.getEffect("combine", CombineEffect.class).apply(this.singlesampleFramebuffer.getTexture(0), 1f, finalOutput, 2f);
+		finalOutput = this.effectManager.getEffect("combine", CombineEffect.class).apply(this.singlesampleFramebuffer.getTexture(0), 1f, finalOutput, 1.5f);
 		glViewport(0, 0, Display.getWidth(), Display.getHeight());
 		this.effectManager.getEffect("draw", DrawEffect.class).apply(finalOutput);
 		

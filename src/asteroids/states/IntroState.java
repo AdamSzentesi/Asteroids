@@ -1,6 +1,6 @@
-package asteroids.games;
+package asteroids.states;
 
-import asteroids.Game;
+import asteroids.State;
 import asteroids.World;
 import asteroids.components.*;
 import asteroids.components.Collider.*;
@@ -8,16 +8,20 @@ import asteroids.components.Geometry2D.*;
 import asteroids.subsystems.*;
 import static org.lwjgl.opengl.GL11.glClearColor;
 
-public class Intro extends Game
+/**
+ *
+ * @author Adam Szentesi
+ */
+public class IntroState extends State
 {
 	private World world;
-	
-	public Intro(int width, int height)
+
+	public IntroState(int width, int height)
 	{
 		super(width, height);
 		this.world = new World(100);
 	}
-
+	
 	@Override
 	public void initialize()
 	{
@@ -87,32 +91,53 @@ public class Intro extends Game
 			world.getComponent(companyLabel, Render2DTextComponent.class).color.set(1.0f, 1.0f, 1.0f);
 			world.getComponent(companyLabel, Render2DTextComponent.class).setPosition(-150, -50);
 			world.getComponent(companyLabel, Render2DTextComponent.class).setSize(16, 16);
+		
 			
+			
+			
+		int menuItem01 = this.world.createEntity();
+		world.addComponent(menuItem01, Render2DTextComponent.class);
+			world.getComponent(menuItem01, Render2DTextComponent.class).setString("> NEW GAME");
+			world.getComponent(menuItem01, Render2DTextComponent.class).color.set(1.0f, 0.0f, 0.0f);
+			world.getComponent(menuItem01, Render2DTextComponent.class).setPosition(-150, -100);
+			world.getComponent(menuItem01, Render2DTextComponent.class).setSize(16, 16);
+			
+		int menuItem02 = this.world.createEntity();
+		world.addComponent(menuItem02, Render2DTextComponent.class);
+			world.getComponent(menuItem02, Render2DTextComponent.class).setString("  OPTIONS");
+			world.getComponent(menuItem02, Render2DTextComponent.class).color.set(1.0f, 1.0f, 1.0f);
+			world.getComponent(menuItem02, Render2DTextComponent.class).setPosition(-150, -116);
+			world.getComponent(menuItem02, Render2DTextComponent.class).setSize(16, 16);
+			
+		int menuItem03 = this.world.createEntity();
+		world.addComponent(menuItem03, Render2DTextComponent.class);
+			world.getComponent(menuItem03, Render2DTextComponent.class).setString("  EXIT");
+			world.getComponent(menuItem03, Render2DTextComponent.class).color.set(1.0f, 1.0f, 1.0f);
+			world.getComponent(menuItem03, Render2DTextComponent.class).setPosition(-150, -132);
+			world.getComponent(menuItem03, Render2DTextComponent.class).setSize(16, 16);
 		System.out.println("...");
 		
 		//HIERARCHY
 		
 		//SUBSYSTEM ADDITIONS
 		world.getRenderSubsystem(Render2DSubsystem.class).setActiveCamera(world, camera);
-
 	}
-
+	
 	@Override
 	public void update(float delta)
 	{
 		this.world.update(delta);
 	}
-	
+
 	@Override
 	public void render()
 	{
 		this.world.render(0);
 	}
-	
+
 	@Override
 	public void cleanUp()
 	{
 		this.world.cleanUp();
 	}
-	
 }

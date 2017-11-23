@@ -28,7 +28,7 @@ public class CoreEngine
 	{
 		this.delta = (float) 1 / FPS;
 		this.running = false;
-		this.game = new Intro(width, height);
+		this.game = new Testgame(width, height);
 		
 		Window.create(width, height, title);
 	}
@@ -64,7 +64,7 @@ public class CoreEngine
 	{
 		System.out.println("CoreEngine: running");
 		this.running = true;
-		game.initialize();
+		this.game.initialize();
 		
 		long frameCounter = 0;
 		int frames = 0;
