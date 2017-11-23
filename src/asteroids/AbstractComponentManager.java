@@ -2,6 +2,11 @@ package asteroids;
 
 import asteroids.components.Component;
 
+/**
+ * AbstractComponentManager
+ * 
+ * @author Adam Szentesi
+ */
 public abstract class AbstractComponentManager
 {
 	/**

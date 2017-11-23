@@ -85,7 +85,7 @@ public class AsteroidSubsystem extends Subsystem
 					case ECS_HIT:
 					{
 						//System.out.println("HIT by: " + world.getEntityKey((int)message.value));
-						if(world.hasEntityComponent((int)message.value, Projectile2DComponent.class))
+						if(true)
 						{
 							AsteroidComponent asteroidComponent = world.getComponent(entityId, AsteroidComponent.class);
 							asteroidComponent.level -= 1;

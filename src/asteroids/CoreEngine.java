@@ -4,6 +4,11 @@ import asteroids.games.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Timing and frame skipping <b>CoreEngine</b>. Provides a main loop.
+ * 
+ * @author Adam Szentesi
+ */
 public class CoreEngine
 {
 	private final float delta;
@@ -11,15 +16,26 @@ public class CoreEngine
 	private Game game;
 	private final long BILLION = 1000000000;
 	
+	/**
+	 * Constructs a CoreEngine with openGL context window
+	 * 
+	 * @param width  window width in pixels
+	 * @param height window height in pixels
+	 * @param FPS    frames-per-second cap
+	 * @param title  window title
+	 */
 	public CoreEngine(int width, int height, int FPS, String title)
 	{
 		this.delta = (float) 1 / FPS;
 		this.running = false;
-		this.game = new Testgame(width, height);
+		this.game = new Intro(width, height);
 		
 		Window.create(width, height, title);
 	}
 	
+	/**
+	 * Starts the main loop
+	 */
 	public void start()
 	{
 		System.out.println("CoreEngine: started");
@@ -29,6 +45,9 @@ public class CoreEngine
 		}
 	}
 	
+	/**
+	 * Stops the main loop
+	 */
 	public void stop()
 	{
 		System.out.println("CoreEngine: stopped");
@@ -38,6 +57,9 @@ public class CoreEngine
 		}
 	}
 	
+	/**
+	 * The main loop
+	 */
 	private void run()
 	{
 		System.out.println("CoreEngine: running");
@@ -113,6 +135,11 @@ public class CoreEngine
 		Window.destroy();
 	}
 	
+	/**
+	 * Let the thread rest
+	 * 
+	 * @param time resting time in milliseconds
+	 */
 	private void sleep(long time)
 	{
 		try
