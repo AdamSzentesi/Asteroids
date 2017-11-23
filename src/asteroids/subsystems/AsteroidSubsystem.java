@@ -12,16 +12,12 @@ import asteroids.components.Geometry2D.Transform2DComponent;
 import asteroids.components.Projectile2DComponent;
 import asteroids.components.RotateComponent;
 import asteroids.math.Vector2f;
+import static asteroids.messenger.Messages.*;
+import asteroids.subsystems.render3D.OpenGLUtils;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.List;
 import java.util.Random;
-import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
-import static org.lwjgl.opengl.GL15.glBindBuffer;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
 
 public class AsteroidSubsystem extends Subsystem
 {
@@ -62,18 +58,18 @@ public class AsteroidSubsystem extends Subsystem
 		};
 		//turn vertex array to buffer
 		FloatBuffer vertexBuffer = Util.makeFlippedBuffer(vertexArray);
-		this.vbo = makeVBO(vertexBuffer);
+		this.vbo = OpenGLUtils.makeVBO(vertexBuffer);
 		this.vboCount = vertexArray.length; 
 		//turn index array to buffer
 		IntBuffer indexBuffer = Util.makeFlippedBuffer(indexArray);
-		this.ibo = makeIBO(indexBuffer);
+		this.ibo = OpenGLUtils.makeIBO(indexBuffer);
 		this.iboCount = indexArray.length;
 	}
 	
 	@Override
 	public void process(World world, float delta)
 	{
-		for(int entityId : this.getList("primary"))
+		for(int entityId : this.getPrimaryList())
 		{
 			Transform2DComponent transform2DComponent = world.getComponent(entityId, Transform2DComponent.class);
 			transform2DComponent.transform.rotation += world.getComponent(entityId, RotateComponent.class).rate * delta;
@@ -86,7 +82,7 @@ public class AsteroidSubsystem extends Subsystem
 				Message message = messages.get(i);
 				switch (message.parameter)
 				{
-					case "HIT":
+					case ECS_HIT:
 					{
 						//System.out.println("HIT by: " + world.getEntityKey((int)message.value));
 						if(world.hasEntityComponent((int)message.value, Projectile2DComponent.class))
@@ -111,7 +107,7 @@ public class AsteroidSubsystem extends Subsystem
 						}
 						break;
 					}
-					case "DISPERSE":
+					case ECS_DISPERSE:
 					{
 						System.out.println("dis");
 						disperse(world);
@@ -165,28 +161,5 @@ public class AsteroidSubsystem extends Subsystem
 		Vector2f result = new Vector2f(0, 1).rotate(randomAngle);
 		return result;
 	}
-	
-	//return VBO from FloatBuffer
-	private int makeVBO(FloatBuffer inputData)
-	{
-		//create VBO
-		int vertexBuffer = glGenBuffers();
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-			glBufferData(GL_ARRAY_BUFFER, inputData, GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		
-		return vertexBuffer;
-	}
-	
-	//return IBO from FloatBuffer
-	private int makeIBO(IntBuffer inputData)
-	{
-		//create IBO
-		int indexBuffer = glGenBuffers();
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, inputData, GL_STATIC_DRAW);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		
-		return indexBuffer;
-	}
+
 }

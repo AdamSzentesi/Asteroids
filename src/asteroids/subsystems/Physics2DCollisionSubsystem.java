@@ -11,6 +11,7 @@ import asteroids.geometry.GeometryUtils;
 import asteroids.math.Grid;
 import asteroids.math.Matrix4f;
 import asteroids.math.Vector2f;
+import static asteroids.messenger.Messages.*;
 import asteroids.subsystems.physics2D.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,7 @@ public class Physics2DCollisionSubsystem extends Subsystem
 	{
 		//grid
 		this.grid.clear();
-		for(int entityId : this.getList("primary"))
+		for(int entityId : this.getPrimaryList())
 		{
 			Transform2DComponent transform2DComponent = world.getComponent(entityId, Transform2DComponent.class);
 			Matrix4f rotateScaleMatrix = transform2DComponent.getWorldMatrix();//no
@@ -154,8 +155,8 @@ public class Physics2DCollisionSubsystem extends Subsystem
 							transform2DComponentA.lastCollisionNormal = collisionData.collisionNormal;
 							transform2DComponentB.lastCollisionNormal = collisionData.collisionNormal.multiply(-1);
 
-							this.sendMessage(new Message(entityIdA, "HIT", entityIdB));
-							this.sendMessage(new Message(entityIdB, "HIT", entityIdA));
+							this.sendMessage(new Message(entityIdA, ECS_HIT, entityIdB));
+							this.sendMessage(new Message(entityIdB, ECS_HIT, entityIdA));
 						
 						}
 					}

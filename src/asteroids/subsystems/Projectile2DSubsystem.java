@@ -3,6 +3,7 @@ package asteroids.subsystems;
 import asteroids.Message;
 import asteroids.World;
 import asteroids.components.Projectile2DComponent;
+import static asteroids.messenger.Messages.*;
 import java.util.List;
 
 public class Projectile2DSubsystem extends Subsystem
@@ -12,7 +13,7 @@ public class Projectile2DSubsystem extends Subsystem
 	@Override
 	public void process(World world, float delta)
 	{	
-		for(int entityId : this.getList("primary"))
+		for(int entityId : this.getPrimaryList())
 		{
 			Projectile2DComponent projectile2DComponent = world.getComponent(entityId, Projectile2DComponent.class);
 			
@@ -22,7 +23,7 @@ public class Projectile2DSubsystem extends Subsystem
 			{
 				switch (message.parameter)
 				{
-					case "HIT":
+					case ECS_HIT:
 						if((int)message.value != this.ignored)
 						{
 							//System.out.println("HIT bullet: " + entityId);

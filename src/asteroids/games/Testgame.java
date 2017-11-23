@@ -6,11 +6,9 @@ import asteroids.components.*;
 import asteroids.components.Collider.*;
 import asteroids.components.Collider.Shapes.*;
 import asteroids.components.Geometry2D.*;
-import asteroids.math.Grid;
 import asteroids.math.Vector2f;
+import static asteroids.messenger.Messages.*;
 import asteroids.subsystems.*;
-import asteroids.subsystems.physics2D.Physics2DAABB;
-import java.util.List;
 import static org.lwjgl.opengl.GL11.glClearColor;
 
 public class Testgame extends Game
@@ -61,6 +59,7 @@ public class Testgame extends Game
 		world.addSubsystem(AsteroidSubsystem.class, asteroidComponentKey | transform2DComponentKey | collider2DComponentKey | rotateComponentKey);
 		world.addSubsystem(Rotate2DSubsystem.class, transform2DComponentKey | rotateComponentKey);
 		world.addSubsystem(Update2DCameraSubsystem.class, cameraComponentKey | transform2DComponentKey);
+		world.addSubsystem(UpdateHUDSubsystem.class, render2DTextComponent);
 		world.addRenderSubsystem(Render2DSubsystem.class, render2DLineComponentKey | transform2DComponentKey);
 			world.getRenderSubsystem(Render2DSubsystem.class).addLock("colliders", collider2DComponentKey | transform2DComponentKey);
 			world.getRenderSubsystem(Render2DSubsystem.class).addLock("text", render2DTextComponent);
@@ -106,18 +105,17 @@ public class Testgame extends Game
 			);
 			world.getComponent(player, Render2DLineComponent.class).color.set(0.0f, 1.0f, 1.0f);
 		world.addComponent(player, Collider2DComponent.class);
-			//world.getComponent(player, Collider2DComponent.class).setShape(new Collider2DShapeCircle(0.10f));
-			world.getComponent(player, Collider2DComponent.class).setShape(new Collider2DShapeRectangle(0.1f, 0.8f));
+			world.getComponent(player, Collider2DComponent.class).setShape(new Collider2DShapeCircle(0.10f));
 			world.getComponent(player, Collider2DComponent.class).position.set(0.0f, 0.0f);
 		world.addComponent(player, Rigidbody2DComponent.class);
 			world.getComponent(player, Rigidbody2DComponent.class).mass = 3.0f;
 			world.getComponent(player, Rigidbody2DComponent.class).maxVelocity = 1.5f;
 			world.getComponent(player, Rigidbody2DComponent.class).velocity.set(0.0f, 0.0f);
 		world.addComponent(player, InputComponent.class);
-			world.getComponent(player, InputComponent.class).commands.put("KEY_SPACE", "THRUST");
-			world.getComponent(player, InputComponent.class).commands.put("KEY_E", "FIRE");
-			world.getComponent(player, InputComponent.class).commands.put("KEY_LEFT", "TURN_LEFT");
-			world.getComponent(player, InputComponent.class).commands.put("KEY_RIGHT", "TURN_RIGHT");
+			world.getComponent(player, InputComponent.class).commands.put("KEY_SPACE", ECS_THRUST);
+			world.getComponent(player, InputComponent.class).commands.put("KEY_E", ECS_FIRE);
+			world.getComponent(player, InputComponent.class).commands.put("KEY_LEFT", ECS_TURN_LEFT);
+			world.getComponent(player, InputComponent.class).commands.put("KEY_RIGHT", ECS_TURN_RIGHT);
 		world.addComponent(player, ShootComponent.class);
 			world.getComponent(player, ShootComponent.class).reloadTime = 0.1f;
 		world.addComponent(player, ThrustComponent.class);
@@ -180,12 +178,12 @@ public class Testgame extends Game
 			world.getComponent(livesLabel, Render2DTextComponent.class).setPosition(416, 360);
 			world.getComponent(livesLabel, Render2DTextComponent.class).setSize(16, 16);
 			
-		int lives = this.world.createEntity();
-		world.addComponent(lives, Render2DTextComponent.class);
-			world.getComponent(lives, Render2DTextComponent.class).setString("100");
-			world.getComponent(lives, Render2DTextComponent.class).color.set(0.0f, 1.0f, 1.0f);
-			world.getComponent(lives, Render2DTextComponent.class).setPosition(416, 344);
-			world.getComponent(lives, Render2DTextComponent.class).setSize(16, 16);
+		//int lives = this.world.createEntity();
+		world.addComponent(player, Render2DTextComponent.class);
+			world.getComponent(player, Render2DTextComponent.class).setString("100");
+			world.getComponent(player, Render2DTextComponent.class).color.set(0.0f, 1.0f, 1.0f);
+			world.getComponent(player, Render2DTextComponent.class).setPosition(416, 344);
+			world.getComponent(player, Render2DTextComponent.class).setSize(16, 16);
 			
 		System.out.println("...");
 		

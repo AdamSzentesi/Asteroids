@@ -70,7 +70,7 @@ public class Render2DTextComponent extends Component
 	{
 		this.string = string;
 	}
-	
+
 	public String get()
 	{
 		return this.string;

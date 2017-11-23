@@ -183,7 +183,7 @@ public class InputSubsystem extends Subsystem
 	{
 		catchKeys(world, delta);
 		
-		for(int entityId : this.getList("primary"))
+		for(int entityId : this.getPrimaryList())
 		{
 			InputComponent inputComponent = world.getComponent(entityId, InputComponent.class);
 			for(int key : this.lastKeys)

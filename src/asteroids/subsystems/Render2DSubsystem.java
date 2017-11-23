@@ -16,6 +16,7 @@ import asteroids.subsystems.render2D.primitives.Debug2DPrimitive;
 import asteroids.subsystems.render2D.primitives.Debug2DPrimitiveRectangle;
 import asteroids.subsystems.render3D.Framebuffer;
 import asteroids.subsystems.render3D.Postprocessing.*;
+import static asteroids.subsystems.ThrustSubsystem.*;
 import java.util.HashMap;
 import java.util.Map;
 import org.lwjgl.opengl.Display;
@@ -207,7 +208,7 @@ public class Render2DSubsystem extends Subsystem
 		glDisable(GL_DEPTH_TEST);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		//iterate through geometry
-		for(int entityId : this.getList("primary"))
+		for(int entityId : this.getPrimaryList())
 		{
 			//System.out.println(entityId);
 			Render2DLineComponent render2DLineComponent = world.getComponent(entityId, Render2DLineComponent.class);

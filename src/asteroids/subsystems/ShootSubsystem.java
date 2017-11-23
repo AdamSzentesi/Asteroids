@@ -11,15 +11,11 @@ import asteroids.components.Geometry2D.Transform2DComponent;
 import asteroids.components.Projectile2DComponent;
 import asteroids.components.ShootComponent;
 import asteroids.math.Vector2f;
+import static asteroids.messenger.Messages.*;
+import asteroids.subsystems.render3D.OpenGLUtils;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.List;
-import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
-import static org.lwjgl.opengl.GL15.glBindBuffer;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
 
 public class ShootSubsystem extends Subsystem
 {
@@ -47,18 +43,18 @@ public class ShootSubsystem extends Subsystem
 		};
 		//turn vertex array to buffer
 		FloatBuffer vertexBuffer = Util.makeFlippedBuffer(vertexArray);
-		this.vbo = makeVBO(vertexBuffer);
+		this.vbo = OpenGLUtils.makeVBO(vertexBuffer);
 		this.vboCount = vertexArray.length; 
 		//turn index array to buffer
 		IntBuffer indexBuffer = Util.makeFlippedBuffer(indexArray);
-		this.ibo = makeIBO(indexBuffer);
+		this.ibo = OpenGLUtils.makeIBO(indexBuffer);
 		this.iboCount = indexArray.length;
 	}
 	
 	@Override
 	public void process(World world, float delta)
 	{
-		for(int entityId : this.getList("primary"))
+		for(int entityId : this.getPrimaryList())
 		{
 			Transform2DComponent transform2DComponent = world.getComponent(entityId, Transform2DComponent.class);
 			ShootComponent shootComponent = world.getComponent(entityId, ShootComponent.class);
@@ -76,7 +72,7 @@ public class ShootSubsystem extends Subsystem
 				Message message = messages.get(i);
 				switch (message.parameter)
 				{
-					case "FIRE":
+					case ECS_FIRE:
 						if(shootComponent.lastShootTime <= 0)
 						{
 							Vector2f velocity = new Vector2f(0, 2.5f).rotate(transform2DComponent.transform.rotation);
@@ -86,6 +82,10 @@ public class ShootSubsystem extends Subsystem
 							}
 							summon(world, transform2DComponent, velocity);
 							shootComponent.lastShootTime = shootComponent.reloadTime;
+							
+							Vector2f force = new Vector2f(0, 1).rotate(transform2DComponent.transform.rotation);
+							force = force.multiply(-20f);
+							this.sendMessage(new Message(entityId, ECS_APPLY_FORCE, force));
 						}
 					break;	
 				}
@@ -113,28 +113,5 @@ public class ShootSubsystem extends Subsystem
 			world.getComponent(summoned, Collider2DComponent.class).setShape(new Collider2DShapePoint());
 			world.getComponent(summoned, Collider2DComponent.class).position.set(0.0f, 0.0f);
 	}
-	
-	//return VBO from FloatBuffer
-	private int makeVBO(FloatBuffer inputData)
-	{
-		//create VBO
-		int vertexBuffer = glGenBuffers();
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-			glBufferData(GL_ARRAY_BUFFER, inputData, GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		
-		return vertexBuffer;
-	}
-	
-	//return IBO from FloatBuffer
-	private int makeIBO(IntBuffer inputData)
-	{
-		//create IBO
-		int indexBuffer = glGenBuffers();
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, inputData, GL_STATIC_DRAW);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		
-		return indexBuffer;
-	}
+
 }

@@ -5,6 +5,7 @@ import asteroids.World;
 import asteroids.components.Geometry2D.Rigidbody2DComponent;
 import asteroids.components.Geometry2D.Transform2DComponent;
 import asteroids.math.Vector2f;
+import static asteroids.messenger.Messages.*;
 import java.util.List;
 
 public class Physics2DMoveSubsystem extends Subsystem
@@ -15,7 +16,7 @@ public class Physics2DMoveSubsystem extends Subsystem
 		Vector2f netAcceleration = new Vector2f();
 		
 		//SIMULATIONS
-		for(int entityId : this.getList("primary"))
+		for(int entityId : this.getPrimaryList())
 		{
 			Rigidbody2DComponent rigidbody2DComponent = world.getComponent(entityId, Rigidbody2DComponent.class);
 			//System.out.print(entityId + "." + rigidbody2DComponent);
@@ -38,7 +39,7 @@ public class Physics2DMoveSubsystem extends Subsystem
 				{
 					switch (message.parameter)
 					{
-						case "APPLY_FORCE":
+						case ECS_APPLY_FORCE:
 						{
 							Vector2f addAcceleration = message.getValue(Vector2f.class).divide(rigidbody2DComponent.mass);
 							Vector2f addVelocity = addAcceleration.multiply(delta);

@@ -8,7 +8,7 @@ public class FieldSubsystem extends Subsystem
 	@Override
 	public void process(World world, float delta)
 	{
-		for(int entityId : this.getList("primary"))
+		for(int entityId : this.getPrimaryList())
 		{
 			Transform2DComponent transform2DComponent = world.getComponent(entityId, Transform2DComponent.class);
 			
