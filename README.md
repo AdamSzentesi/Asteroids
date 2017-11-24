@@ -1,5 +1,9 @@
 # Asteroids
-Asteroids game clone: a demo of ECS game engine development in Java
+Asteroids game clone: a demo of ECS game engine development in Java.
+
+**The engine is still in development**
+
+demo: [https://www.youtube.com/watch?v=m4q8qE4vyrc](https://www.youtube.com/watch?v=m4q8qE4vyrc)
 
 ## Entity-Componen-System
 is based on data oriented design where game objects are not based on class inheritance and have no methods. Game objects are identified as Entities and have properties defined by Components. This type of composition lets user to define game objects with different behavior very quickly, parts of the engine can be easily turned on and off.
@@ -17,8 +21,11 @@ are logic of the engine, are called one after another in cycles, act like proces
 is where EntityManager, ComponentManager and SubsystemManager resides. World executes logic of creating and destroying of game objects.
 
 ### Ease of use
-
+```
 //GAME INIT
+//create a world. This has max. 100 game objects
+World world = new World(100);
+
 //register components and get unique keys
 long transform2DComponentKey = world.registerComponent(Transform2DComponent.class);
 long rigidbody2DComponentKey = world.registerComponent(Rigidbody2DComponent.class);
@@ -44,3 +51,4 @@ this.world.render(0);
 
 //CLEANUP AT THE END
 this.world.cleanUp();
+```
