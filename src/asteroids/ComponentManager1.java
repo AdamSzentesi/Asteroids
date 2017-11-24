@@ -127,5 +127,10 @@ public class ComponentManager1 extends AbstractComponentManager
 		}
 		return result;
 	}
+
+	@Override
+	<T extends Component> T getComponent(int entityId, long componentKey) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 	
 }

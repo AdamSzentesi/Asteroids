@@ -83,6 +83,11 @@ public class World
 		long entityKey = this.entityManager.addEntityKey(entityId, componentKey);
 		this.entitiesToCreate.add(new Pair<Integer, Long>(entityId, entityKey));
 	}
+//	public void addComponent(int entityId, long componentKey)
+//	{
+//		long entityKey = this.entityManager.addEntityKey(entityId, componentKey);
+//		this.entitiesToCreate.add(new Pair<Integer, Long>(entityId, entityKey));
+//	}
 	
 	/**
 	 * Retrieves a component of a given class from an entity
@@ -96,6 +101,10 @@ public class World
 	{
 		return this.componentManager.getComponent(entityId, componentClass);
 	}
+//	public <T extends Component> T getComponent(int entityId, long componentKey)
+//	{
+//		return this.componentManager.getComponent(entityId, componentKey);
+//	}
 	
 	/**
 	 * Retrieves a bitwise component type key of a given component class

@@ -20,6 +20,7 @@ public abstract class AbstractComponentManager
 	abstract long addComponent(int entityId, Class componentClass);
 	
 	abstract <T extends Component> T getComponent(int entityId, Class<T> componentClass);
+	abstract <T extends Component> T getComponent(int entityId, long componentKey);
 	
 	abstract void destroyComponentsOnEntity(int entityId);
 	

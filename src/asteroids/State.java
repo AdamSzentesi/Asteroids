@@ -15,7 +15,23 @@ public abstract class State
 		this.width = width;
 		this.height = height;
 	}
-		
+	
+	public final void push(State state)
+	{
+		this.stateManager.push(state);
+	}
+	
+	public final void pop()
+	{
+		this.stateManager.pop();
+	}
+	
+	public final void set(State state)
+	{
+		this.pop();
+		this.push(state);
+	}
+	
 	public final int getWidth()
 	{
 		return this.width;

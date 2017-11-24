@@ -23,7 +23,9 @@ public class StateManager
 	
 	public void pop()
 	{
+		cleanUp();
 		this.states.pop();
+		initialize();
 	}
 	
 	public void set(State state)

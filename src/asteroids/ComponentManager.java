@@ -77,7 +77,14 @@ public class ComponentManager extends AbstractComponentManager
 		long componentKey = getComponentKey(componentClass);
 		return componentClass.cast(this.components.get(componentKey)[entityId]);
 	}
-
+	
+	@Override
+	public <T extends Component> T getComponent(int entityId, long componentKey)
+	{
+		Class<T> componentClass = (Class)componentsStore.get(componentKey);
+		return componentClass.cast(this.components.get(componentKey)[entityId]);
+	}
+	
 	@Override
 	public void destroyComponentsOnEntity(int entityId)
 	{
