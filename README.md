@@ -37,7 +37,7 @@ world.addSubsystem(Physics2DMoveSubsystem.class, transform2DComponentKey | rigid
 int entityId = world.createEntity();
 world.addComponent(entityId, Transform2DComponent.class);
   world.getComponent(entityId, Transform2DComponent.class).transform.position.set(5f, 4f);
-	world.getComponent(entityId, Transform2DComponent.class).transform.scale.set(2.0f, 2.0f);
+  world.getComponent(entityId, Transform2DComponent.class).transform.scale.set(2.0f, 2.0f);
 world.addComponent(entityId, Rigidbody2DComponent.class);
   world.getComponent(entityId, Rigidbody2DComponent.class).mass = 3000.0f;
   world.getComponent(entityId, Rigidbody2DComponent.class).maxVelocity = 5.0f;
